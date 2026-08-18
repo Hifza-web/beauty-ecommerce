@@ -4,7 +4,7 @@ import { useState, useEffect } from "react";
 
 export default function Hero() {
 
-const originalImages = ["/img11.png", "/img2.png", "/img3.png"];
+const originalImages = ["/img1.png", "/img2.png", "/img3.png"];
 // yahan: Hum pehli image ko aakhir mein bhi daal rahe hain loop ko smooth banane ke liye
 const images = [...originalImages, originalImages[0]];
 
