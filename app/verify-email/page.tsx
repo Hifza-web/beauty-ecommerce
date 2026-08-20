@@ -2,9 +2,10 @@
 
 import Link from "next/link";
 import { useEffect, useRef, useState } from "react";
+import { Suspense } from "react";
 import { useSearchParams } from "next/navigation";
 
-export default function VerifyEmailPage() {
+function VerifyEmailContent() {
   const searchParams = useSearchParams();
 
   const [email, setEmail] = useState(
@@ -266,5 +267,13 @@ const handleResend = async () => {
         </div>
       </div>
     </div>
+  );
+}
+
+export default function VerifyEmailPage() {
+  return (
+    <Suspense fallback={<div className="min-h-screen bg-[#2a2030] flex items-center justify-center p-[24px] text-[#a89ab0]">Loading...</div>}>
+      <VerifyEmailContent />
+    </Suspense>
   );
 }
