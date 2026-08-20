@@ -69,7 +69,7 @@ function VerifyEmailContent() {
 
   try {
     const response = await fetch(
-      "http://localhost:5000/api/auth/verify-email",
+      "/api/auth/verify-email",
       {
         method: "POST",
         headers: {
@@ -102,7 +102,7 @@ const handleResend = async () => {
 
   try {
     const response = await fetch(
-      "http://localhost:5000/api/auth/resend-code",
+      "/api/auth/resend-code",
       {
         method: "POST",
         headers: {

@@ -24,13 +24,15 @@ const sendEmail = async (email, token, type = "verify") => {
     emailTitle = "Reset Your Password";
     emailMessage = "Click the button below to reset your LUMÉRA password.";
     buttonText = "Reset Password";
-    url = `http://localhost:3000/reset-password?token=${token}`;
+    const clientUrl = process.env.FRONTEND_URL || "http://localhost:3000";
+    url = `${clientUrl}/reset-password?token=${token}`;
   } else {
     emailSubject = "Verify your LUMÉRA account";
     emailTitle = "Welcome to LUMÉRA!";
     emailMessage = "Please click the button below to verify your email.";
     buttonText = "Verify Email";
-    url = `http://localhost:3000/verify-email?token=${token}`;
+    const clientUrl = process.env.FRONTEND_URL || "http://localhost:3000";
+    url = `${clientUrl}/verify-email?token=${token}`;
   }
 
   try {
