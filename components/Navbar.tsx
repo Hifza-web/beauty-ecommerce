@@ -95,13 +95,13 @@ export default function Navbar() {
           </div>
 
           {/* Col 3 — Right icons + mobile button, right edge */}
-          <div className="flex items-center justify-end gap-5">
-
-            {/* Desktop: Wishlist, Cart, Sign In */}
+          <div className="flex items-center justify-end gap-4 lg:gap-5">
+            {/* Desktop & Mobile: Wishlist, Cart */}
+            {/* Sign In is Desktop only, Mobile is in dropdown */}
             <button
               type="button"
               aria-label="Wishlist"
-              className="hidden text-[#4d5832] transition hover:scale-110 lg:block cursor-pointer"
+              className="text-[#4d5832] transition hover:scale-110 cursor-pointer"
             >
               <svg
                 className="h-6 w-6"
@@ -121,7 +121,7 @@ export default function Navbar() {
             <button
               type="button"
               aria-label="Shopping cart"
-              className="hidden relative text-[#4d5832] transition hover:scale-110 lg:block cursor-pointer"
+              className="relative text-[#4d5832] transition hover:scale-110 cursor-pointer"
             >
               <svg
                 className="h-6 w-6"
@@ -176,53 +176,101 @@ export default function Navbar() {
         {/* Mobile Menu */}
         {menuOpen && (
           <div className="mt-4 space-y-3 border-t border-[#e8e5d5] pt-4 lg:hidden">
+            {/* Search Bar for Mobile */}
+            <div className="mb-4 w-full">
+              <div className="flex h-10 items-center rounded-full border border-[#d8d6b8] bg-white px-4">
+                <svg
+                  className="mr-2 h-4 w-4 shrink-0 text-[#9b9a91]"
+                  fill="none"
+                  viewBox="0 0 24 24"
+                  stroke="currentColor"
+                  strokeWidth="1.8"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    d="m21 21-4.35-4.35m1.35-5.4a6.75 6.75 0 1 1-13.5 0 6.75 6.75 0 0 1 13.5 0Z"
+                  />
+                </svg>
+                <input
+                  type="text"
+                  placeholder="Search..."
+                  className="w-full bg-transparent text-sm text-[#55534d] outline-none placeholder:text-[#aaa9a1]"
+                />
+              </div>
+            </div>
+
             <Link
               href="/shop"
-              className="block py-2 text-[#55534d]"
+              className="block py-2 text-[#55534d] font-bold"
               onClick={() => setMenuOpen(false)}
             >
-              Products
+              SHOP ALL
             </Link>
 
             <Link
-              href="/categories"
-              className="block py-2 text-[#55534d]"
+              href="/makeup"
+              className="block py-2 text-[#55534d] font-bold"
               onClick={() => setMenuOpen(false)}
             >
-              Categories
+              MAKEUP
             </Link>
 
             <Link
-              href="/deals"
-              className="block py-2 text-[#55534d]"
+              href="/skin care"
+              className="block py-2 text-[#55534d] font-bold"
               onClick={() => setMenuOpen(false)}
             >
-              Deals
+              SKIN CARE
             </Link>
 
             <Link
-              href="/contact"
-              className="block py-2 text-[#55534d]"
+              href="/hair care"
+              className="block py-2 text-[#55534d] font-bold"
               onClick={() => setMenuOpen(false)}
             >
-              Contact
+              HAIR CARE
             </Link>
 
             <Link
               href="/about"
-              className="block py-2 text-[#55534d]"
+              className="block py-2 text-[#55534d] font-bold"
               onClick={() => setMenuOpen(false)}
             >
-              About
+              ABOUT
             </Link>
 
             <Link
-              href="/login"
-              className="block py-2 font-medium text-[#4d5832]"
+              href="/contact"
+              className="block py-2 text-[#55534d] font-bold"
               onClick={() => setMenuOpen(false)}
             >
-              Sign In
+              CONTACT
             </Link>
+
+            <div className="my-2 flex flex-col gap-3 border-t border-[#e8e5d5] pt-3">
+              <Link
+                href="/login"
+                className="flex items-center gap-2 py-2 font-medium text-[#4d5832]"
+                onClick={() => setMenuOpen(false)}
+              >
+                <svg
+                  className="h-5 w-5"
+                  fill="none"
+                  viewBox="0 0 24 24"
+                  stroke="currentColor"
+                  strokeWidth="1.7"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    d="M15 21v-2a4 4 0 0 0-4-4H7a4 4 0 0 0-4 4v2"
+                  />
+                  <circle cx="9" cy="7" r="4" />
+                </svg>
+                Sign In
+              </Link>
+            </div>
           </div>
         )}
       </nav>

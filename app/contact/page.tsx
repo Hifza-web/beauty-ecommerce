@@ -8,6 +8,63 @@ import { Mail, MapPin, Clock } from "lucide-react";
 
 export default function Contact() {
   const [openFaq, setOpenFaq] = useState<number | null>(null);
+
+  const [formData, setFormData] = useState({
+    firstName: "",
+    lastName: "",
+    email: "",
+    subject: "",
+    message: "",
+  });
+
+  const [formMessage, setFormMessage] = useState("");
+  const [formError, setFormError] = useState("");
+  const handleChange = (
+    e: React.ChangeEvent<
+      HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement
+    >,
+  ) => {
+    setFormData({
+      ...formData,
+      [e.target.name]: e.target.value,
+    });
+  };
+  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+
+    setFormMessage("");
+    setFormError("");
+
+    try {
+      const response = await fetch("http://localhost:5000/api/contact", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(formData),
+      });
+
+      const data = await response.json();
+
+      if (!response.ok) {
+        setFormError(data.message || "Failed to send message");
+        return;
+      }
+
+      setFormMessage(data.message);
+
+      setFormData({
+        firstName: "",
+        lastName: "",
+        email: "",
+        subject: "",
+        message: "",
+      });
+    } catch (error) {
+      console.error("Contact form error:", error);
+      setFormError("Unable to connect to the server");
+    }
+  };
   return (
     <>
       <Navbar />
@@ -151,7 +208,10 @@ export default function Contact() {
                 How can we help?
               </h2>
 
-              <form className="mt-10 grid gap-x-8 gap-y-7 md:grid-cols-2">
+              <form
+                onSubmit={handleSubmit}
+                className="mt-10 grid gap-x-8 gap-y-7 md:grid-cols-2"
+              >
                 {/* First Name */}
                 <div>
                   <label className="mb-2 block text-xs font-bold uppercase tracking-[0.15em] text-[#9b7777]">
@@ -159,55 +219,63 @@ export default function Contact() {
                   </label>
 
                   <input
+                    name="firstName"
+                    value={formData.firstName}
+                    onChange={handleChange}
                     type="text"
                     placeholder="Your first name"
                     required
                     // className="w-full border-b border-[#dcc1bf] bg-transparent px-0 py-3 text-sm text-[#4b3838] placeholder:text-[#b09c9c] outline-none transition focus:border-[#9b7777]"
                     className="w-full rounded-xl border border-[#dcc1bf] bg-white px-4 py-3 text-sm text-[#4b3838] outline-none transition focus:border-[#9b7777] focus:ring-1 focus:ring-[#9b7777]"
-
                   />
                 </div>
 
                 {/* Last Name */}
                 <div>
                   <label className="mb-2 block text-xs font-bold uppercase tracking-[0.15em] text-[#9b7777]">
-                    Last Name  <span className="text-[#b56f6f]">*</span>
+                    Last Name <span className="text-[#b56f6f]">*</span>
                   </label>
 
                   <input
+                    name="lastName"
+                    value={formData.lastName}
+                    onChange={handleChange}
                     type="text"
                     placeholder="Your last name"
                     required
                     // className="w-full border-b border-[#dcc1bf] bg-transparent px-0 py-3 text-sm text-[#4b3838] placeholder:text-[#b09c9c] outline-none transition focus:border-[#9b7777]"
                     className="w-full rounded-xl border border-[#dcc1bf] bg-white px-4 py-3 text-sm text-[#4b3838] outline-none transition focus:border-[#9b7777] focus:ring-1 focus:ring-[#9b7777]"
-
                   />
                 </div>
 
                 {/* Email */}
                 <div>
                   <label className="mb-2 block text-xs font-bold uppercase tracking-[0.15em] text-[#9b7777]">
-                    Email Address  <span className="text-[#b56f6f]">*</span>
+                    Email Address <span className="text-[#b56f6f]">*</span>
                   </label>
 
                   <input
+                    name="email"
+                    value={formData.email}
+                    onChange={handleChange}
                     type="email"
                     placeholder="you@example.com"
                     required
                     // className="w-full border-b border-[#dcc1bf] bg-transparent px-0 py-3 text-sm text-[#4b3838] placeholder:text-[#b09c9c] outline-none transition focus:border-[#9b7777]"
                     className="w-full rounded-xl border border-[#dcc1bf] bg-white px-4 py-3 text-sm text-[#4b3838] outline-none transition focus:border-[#9b7777] focus:ring-1 focus:ring-[#9b7777]"
-
                   />
                 </div>
 
                 {/* Subject */}
                 <div>
                   <label className="mb-2 block text-xs font-bold uppercase tracking-[0.15em] text-[#9b7777]">
-                    Subject   <span className="text-[#b56f6f]">*</span>
+                    Subject <span className="text-[#b56f6f]">*</span>
                   </label>
 
                   <select
-                    defaultValue=""
+                    name="subject"
+                    value={formData.subject}
+                    onChange={handleChange}
                     className="w-full rounded-xl border border-[#dcc1bf] bg-white px-4 py-3 text-sm text-[#4b3838] outline-none transition focus:border-[#9b7777] focus:ring-1 focus:ring-[#9b7777]"
                     required
                   >
@@ -225,19 +293,31 @@ export default function Contact() {
                 {/* Message */}
                 <div className="md:col-span-2">
                   <label className="mb-2 block text-xs font-bold uppercase tracking-[0.15em] text-[#9b7777]">
-                    Your Message  <span className="text-[#b56f6f]">*</span>
+                    Your Message <span className="text-[#b56f6f]">*</span>
                   </label>
 
                   <textarea
+                    name="message"
+                    value={formData.message}
+                    onChange={handleChange}
                     rows={5}
                     placeholder="Tell us how we can help..."
                     required
                     // className="w-full resize-none border-b border-[#dcc1bf] bg-transparent px-0 py-3 text-sm text-[#4b3838] placeholder:text-[#b09c9c] outline-none transition focus:border-[#9b7777]"
                     className="w-full rounded-xl border border-[#dcc1bf] bg-white px-4 py-3 text-sm text-[#4b3838] outline-none transition focus:border-[#9b7777] focus:ring-1 focus:ring-[#9b7777]"
-
                   />
                 </div>
+                {formError && (
+                  <p className="md:col-span-2 text-sm text-red-600">
+                    {formError}
+                  </p>
+                )}
 
+                {formMessage && (
+                  <p className="md:col-span-2 text-sm text-green-600">
+                    {formMessage}
+                  </p>
+                )}
                 {/* Button */}
                 <div className="pt-2 md:col-span-2">
                   <button
@@ -258,8 +338,6 @@ export default function Contact() {
         <section className="border-t border-[#e5d6d3] bg-[#faf7f5] px-6 py-24 md:py-28">
           <div className="mx-auto max-w-4xl">
             <div className="mb-14 text-center">
-              
-
               <h1 className="text-5xl font-semibold font-medium text-[#4b3838] ">
                 FAQs
               </h1>
