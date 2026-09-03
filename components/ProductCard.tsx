@@ -202,7 +202,7 @@ import { useCart } from "@/components/CartContext";
 import Link from "next/link";
 import { useWishlist } from "@/components/WishlistContext";
 type Product = {
-  id: number;
+  id: string | number;
   name: string;
   price: number;
   image: string;
