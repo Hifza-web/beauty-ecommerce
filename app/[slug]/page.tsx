@@ -13,7 +13,7 @@ import { useWishlist } from "@/components/WishlistContext";
 import ProductCard from "@/components/ProductCard";
 
 export type Product = {
-  id: string; // string for MongoDB _id
+  id: string | number; // string for MongoDB _id
   name: string;
   price: number;
   image: string;
@@ -35,7 +35,7 @@ export default function CategoryPage() {
   else if (slug === "hair-care") categoryName = "Hair Care";
 
   const { addToCart } = useCart();
-  const { addToWishlist } = useWishlist();
+  const { addToWishlist, removeFromWishlist, isInWishlist } = useWishlist();
 
   const [toast, setToast] = useState("");
   const [quickView, setQuickView] = useState<Product | null>(null);

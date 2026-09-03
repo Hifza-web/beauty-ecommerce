@@ -242,10 +242,6 @@ export default function TrendingProducts() {
               {/* CATEGORY INFO */}
               <div className="flex flex-1 flex-col border border-t-0 border-[#f0f0f0] bg-[#faf2f4] p-5">
 
-                {/* CATEGORY */}
-                <p className="text-xs font-semibold uppercase tracking-[0.18em] text-[#8f6f76]">
-                  {category.category}
-                </p>
 
                 {/* TITLE */}
                 <h3 className="mt-3 font-[Marcellus] text-[20px] text-gray-900 ">
