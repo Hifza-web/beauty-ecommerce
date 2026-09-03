@@ -8,7 +8,7 @@ import { useWishlist } from "@/components/WishlistContext";
 import api from "@/lib/api";
 
 export type Product = {
-  id: string; // Updated to string for MongoDB _id
+  id: string | number; // Updated for MongoDB _id and ProductCard
   name: string;
   price: number;
   image: string;
