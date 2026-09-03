@@ -2,25 +2,29 @@
 
 import Link from "next/link";
 import { useState } from "react";
+import { useCart } from "@/components/CartContext";
+import { useWishlist } from "@/components/WishlistContext";
+import { useAuth } from "@/components/AuthContext";
 
 export default function Navbar() {
   const [menuOpen, setMenuOpen] = useState(false);
+  const { cartCount } = useCart();
+  const { wishlist } = useWishlist();
+  const { isLoggedIn, logout } = useAuth();
 
   return (
     <header className="border-t border-[#d9d8b8] bg-[#faf2f4]">
       <nav className="mx-auto max-w-7xl px-6 py-4">
         {/* 3-column grid: logo LEFT | nav+search CENTER | icons RIGHT */}
         <div className="grid grid-cols-[auto_1fr_auto] items-center gap-20">
-
           {/* Col 1 — Logo, left edge */}
           <Link
             href="/"
             className="shrink-0 text-2xl font-bold tracking-tight text-black"
           >
             LUM
-              <span className="text-[#d4a6b6]">É</span>RA
+            <span className="text-[#d4a6b6]">É</span>RA
           </Link>
-          
 
           {/* Col 2 — Center: nav links + search bar */}
           <div className="hidden items-center justify-center gap-5 lg:flex">
@@ -41,14 +45,14 @@ export default function Navbar() {
               </Link>
 
               <Link
-                href="/skin care"
+                href="/skin-care"
                 className="text-[15px] text-[#55534d] transition hover:text-[#4d5832]"
               >
                 SKIN CARE
               </Link>
 
               <Link
-                href="/hair care"
+                href="/hair-care"
                 className="text-[15px] text-[#55534d] transition hover:text-[#4d5832]"
               >
                 HAIR CARE
@@ -98,10 +102,10 @@ export default function Navbar() {
           <div className="flex items-center justify-end gap-4 lg:gap-5">
             {/* Desktop & Mobile: Wishlist, Cart */}
             {/* Sign In is Desktop only, Mobile is in dropdown */}
-            <button
-              type="button"
+            <Link
+              href="/wishlist"
               aria-label="Wishlist"
-              className="text-[#4d5832] transition hover:scale-110 cursor-pointer"
+              className="relative text-[#4d5832] transition hover:scale-110"
             >
               <svg
                 className="h-6 w-6"
@@ -116,12 +120,18 @@ export default function Navbar() {
                   d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78L12 21.23l8.84-8.84a5.5 5.5 0 0 0 0-7.78Z"
                 />
               </svg>
-            </button>
 
-            <button
-              type="button"
+              {wishlist.length > 0 && (
+                <span className="absolute -right-2 -top-2 flex h-5 min-w-5 items-center justify-center rounded-full bg-[#b65f67] px-1 text-[10px] font-semibold text-white">
+                  {wishlist.length}
+                </span>
+              )}
+            </Link>
+
+            <Link
+              href="/cart"
               aria-label="Shopping cart"
-              className="relative text-[#4d5832] transition hover:scale-110 cursor-pointer"
+              className="relative text-[#4d5832] transition hover:scale-110"
             >
               <svg
                 className="h-6 w-6"
@@ -138,28 +148,58 @@ export default function Navbar() {
                 <circle cx="10" cy="20" r="1.2" />
                 <circle cx="18" cy="20" r="1.2" />
               </svg>
-            </button>
 
-            <Link
-              href="/login"
-              className="hidden items-center gap-2 rounded-full border border-[#d8d6b8] px-5 py-2.5 text-sm font-medium text-[#35352f] transition hover:bg-[#f3f1df] lg:flex"
-            >
-              <svg
-                className="h-5 w-5"
-                fill="none"
-                viewBox="0 0 24 24"
-                stroke="currentColor"
-                strokeWidth="1.7"
-              >
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  d="M15 21v-2a4 4 0 0 0-4-4H7a4 4 0 0 0-4 4v2"
-                />
-                <circle cx="9" cy="7" r="4" />
-              </svg>
-              Sign In
+              {/* CART COUNT */}
+              {cartCount > 0 && (
+                <span className="absolute -right-2 -top-2 flex h-5 min-w-5 items-center justify-center rounded-full bg-[#b65f67] px-1 text-[10px] font-semibold text-white">
+                  {cartCount}
+                </span>
+              )}
             </Link>
+
+            {/* Sign In / Log Out (Desktop) */}
+            {isLoggedIn ? (
+              <button
+                onClick={logout}
+                className="hidden items-center gap-2 rounded-full border border-[#d8d6b8] px-5 py-2.5 text-sm font-medium text-[#b65f67] transition hover:bg-[#faf2f4] lg:flex"
+              >
+                <svg
+                  className="h-5 w-5"
+                  fill="none"
+                  viewBox="0 0 24 24"
+                  stroke="currentColor"
+                  strokeWidth="1.7"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"
+                  />
+                </svg>
+                Log Out
+              </button>
+            ) : (
+              <Link
+                href="/login"
+                className="hidden items-center gap-2 rounded-full border border-[#d8d6b8] px-5 py-2.5 text-sm font-medium text-[#35352f] transition hover:bg-[#f3f1df] lg:flex"
+              >
+                <svg
+                  className="h-5 w-5"
+                  fill="none"
+                  viewBox="0 0 24 24"
+                  stroke="currentColor"
+                  strokeWidth="1.7"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    d="M15 21v-2a4 4 0 0 0-4-4H7a4 4 0 0 0-4 4v2"
+                  />
+                  <circle cx="9" cy="7" r="4" />
+                </svg>
+                Sign In
+              </Link>
+            )}
 
             {/* Mobile Menu Button */}
             <button
@@ -217,7 +257,7 @@ export default function Navbar() {
             </Link>
 
             <Link
-              href="/skin care"
+              href="/skin-care"
               className="block py-2 text-[#55534d] font-bold"
               onClick={() => setMenuOpen(false)}
             >
@@ -225,7 +265,7 @@ export default function Navbar() {
             </Link>
 
             <Link
-              href="/hair care"
+              href="/hair-care"
               className="block py-2 text-[#55534d] font-bold"
               onClick={() => setMenuOpen(false)}
             >
@@ -249,27 +289,52 @@ export default function Navbar() {
             </Link>
 
             <div className="my-2 flex flex-col gap-3 border-t border-[#e8e5d5] pt-3">
-              <Link
-                href="/login"
-                className="flex items-center gap-2 py-2 font-medium text-[#4d5832]"
-                onClick={() => setMenuOpen(false)}
-              >
-                <svg
-                  className="h-5 w-5"
-                  fill="none"
-                  viewBox="0 0 24 24"
-                  stroke="currentColor"
-                  strokeWidth="1.7"
+              {isLoggedIn ? (
+                <button
+                  onClick={() => {
+                    logout();
+                    setMenuOpen(false);
+                  }}
+                  className="flex items-center gap-2 py-2 font-medium text-[#b65f67]"
                 >
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    d="M15 21v-2a4 4 0 0 0-4-4H7a4 4 0 0 0-4 4v2"
-                  />
-                  <circle cx="9" cy="7" r="4" />
-                </svg>
-                Sign In
-              </Link>
+                  <svg
+                    className="h-5 w-5"
+                    fill="none"
+                    viewBox="0 0 24 24"
+                    stroke="currentColor"
+                    strokeWidth="1.7"
+                  >
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"
+                    />
+                  </svg>
+                  Log Out
+                </button>
+              ) : (
+                <Link
+                  href="/login"
+                  className="flex items-center gap-2 py-2 font-medium text-[#4d5832]"
+                  onClick={() => setMenuOpen(false)}
+                >
+                  <svg
+                    className="h-5 w-5"
+                    fill="none"
+                    viewBox="0 0 24 24"
+                    stroke="currentColor"
+                    strokeWidth="1.7"
+                  >
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      d="M15 21v-2a4 4 0 0 0-4-4H7a4 4 0 0 0-4 4v2"
+                    />
+                    <circle cx="9" cy="7" r="4" />
+                  </svg>
+                  Sign In
+                </Link>
+              )}
             </div>
           </div>
         )}

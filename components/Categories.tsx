@@ -179,48 +179,33 @@
 
 
 
-import { Heart, Star, ShoppingCart } from "lucide-react";
+// import { Heart, Star, ShoppingCart } from "lucide-react";
+import Link from "next/link";
 
-const products = [
+const categories = [
   {
-    category: "MAKEUP",
-    name: "Luméra Silk Glow Foundation",
-    description: "Discover our luxurious range of luminous foundations for a flawless, radiant everyday look.",
-    rating: "4.9",
-    reviews: 128,
+    name: "MAKEUP",
+    description: "Discover luminous foundations, beautiful lip colors and everything you need to create your perfect look.",
     image: "/makeup.png",
-    oldPrice: "$65.00",
-    price: "$45.00",
+    slug: "makeup",
   },
   {
-    category: "SKIN CARE",
-    name: "Midnight Rose Glow Serum",
-    description: "Hydrate and rejuvenate your skin with our premium glow serums and rich moisturizing creams.",
-    rating: "4.8",
-    reviews: 95,
+    name: "SKIN CARE",
+    description: "Nourish, hydrate and reveal naturally radiant skin with our carefully selected skincare essentials.",
     image: "/skin.png",
-    oldPrice: "$75.00",
-    price: "$55.00",
+    slug: "skin-care",
   },
   {
-    category: "HAIR CARE",
-    name: "Silk Repair Hair Mask",
-    description: "Nourish and repair damaged hair with our deep-conditioning botanical masks and luxury hair oils.",
-    rating: "4.7",
-    reviews: 210,
+    name: "HAIR CARE",
+    description: "Give your hair the care it deserves with nourishing masks, oils and everyday essentials.",
     image: "/hair1.png",
-    oldPrice: "$50.00",
-    price: "$35.00",
+    slug: "hair-care",
   },
   {
-    category: "MAKEUP TOOLS",
-    name: "Pro Rose-Gold Brush Set",
-    description: "Achieve a flawless finish with our professional-grade brushes and premium beauty sponges.",
-    rating: "4.9",
-    reviews: 342,
+    name: "MAKEUP TOOLS",
+    description: "Create a flawless finish with our professional brushes, sponges and essential beauty tools.",
     image: "/brush.png",
-    oldPrice: "$55.00",
-    price: "$39.00",
+    slug: "makeup-tools",
   },
 ];
 
@@ -237,70 +222,51 @@ export default function TrendingProducts() {
           </h2>
         </div>
 
-        {/* Products */}
+        {/* Categories */}
         <div className="grid grid-cols-1 gap-8 sm:grid-cols-2 lg:grid-cols-4">
-          {products.map((product) => (
-            <div key={product.name} className="group flex flex-col">
-              
-              {/* Image & Top Badges */}
+          {categories.map((category) => (
+            <div key={category.name}
+              className="group flex flex-col overflow-hidden rounded-2xl shadow-[0_8px_25px_rgba(69,54,51,0.08)] transition-all duration-300 hover:-translate-y-1 hover:shadow-[0_15px_35px_rgba(69,54,51,0.14)]"
+
+            >
+
+              {/* IMAGE */}
               <div className="relative aspect-square overflow-hidden bg-[#f7eef1]">
                 <img
-                  src={product.image}
-                  alt={product.name}
+                  src={category.image}
+                  alt={category.name}
                   className="h-full w-full object-cover transition duration-500 group-hover:scale-105"
                 />
-                <span className="absolute left-5 top-5 rounded-full bg-white px-4 py-2 text-sm text-[#555] shadow-md">
-                  SALE
-                </span>
-                <button
-                  type="button"
-                  aria-label="Add to wishlist"
-                  className="absolute right-5 top-5 flex h-10 w-10 items-center justify-center rounded-full bg-white text-[#333] shadow-md transition hover:text-[#D4A6B6]"
-                >
-                  <Heart className="h-5 w-5" />
-                </button>
               </div>
 
-              {/* Product Info (Screenshot Style) */}
-              <div className="flex flex-col border border-t-0 border-[#f0f0f0] bg-[#faf2f4] p-5">
-                
-                {/* Category & Rating */}
-                <div className="flex items-center justify-between text-xs font-semibold tracking-wider text-black">
-                  <span className="uppercase">{product.category}</span>
-                  <div className="flex items-center gap-1">
-                    <Star className="h-4 w-4 fill-[#f59e0b] text-[#f59e0b]" />
-                    <span className="font-bold text-gray-900">{product.rating}</span>
-                    <span className="text-gray-400">({product.reviews})</span>
-                  </div>
-                </div>
+              {/* CATEGORY INFO */}
+              <div className="flex flex-1 flex-col border border-t-0 border-[#f0f0f0] bg-[#faf2f4] p-5">
 
-                {/* Title */}
-                <h3 className="mt-3 text-[17px] font-bold text-gray-900 line-clamp-1">
-                  {product.name}
-                </h3>
-
-                {/* Description */}
-                <p className="mt-2 text-sm leading-relaxed text-gray-500 line-clamp-2">
-                  {product.description}
+                {/* CATEGORY */}
+                <p className="text-xs font-semibold uppercase tracking-[0.18em] text-[#8f6f76]">
+                  {category.category}
                 </p>
 
-                {/* Divider Line */}
-                <div className="my-5 border-t border-gray-200" />
+                {/* TITLE */}
+                <h3 className="mt-3 font-[Marcellus] text-[20px] text-gray-900 ">
+                  {category.name}
+                </h3>
 
-                {/* Price & Cart Button */}
-                <div className="flex items-center justify-between">
-                  <div className="flex items-center gap-2">
-                    <span className="text-2xl font-bold text-gray-900">{product.price}</span>
-                    <span className="text-sm text-gray-400 line-through">{product.oldPrice}</span>
-                  </div>
+                {/* DESCRIPTION */}
+                <p className="mt-2 line-clamp-2 text-sm leading-relaxed text-gray-500">
+                  {category.description}
+                </p>
 
-                  <button
-                    type="button"
-                    className="flex h-11 w-11 items-center justify-center rounded-full bg-[#d4a6b6] text-white shadow-md transition hover:bg-[#d09eb0] cursor-pointer"
-                  >
-                    <ShoppingCart className="h-5 w-5" />
-                  </button>
-                </div>
+                {/* BUTTON */}
+                <Link
+                  href={`/${category.slug}`}
+                  className="mt-6 inline-flex w-fit items-center rounded-full border border-[#453633] px-5 py-2.5 text-xs uppercase tracking-[0.15em] text-[#453633] transition duration-300 hover:bg-[#d4a6b6] hover:text-white font-bold"
+                >
+                  Explore {category.name}
+                  <span className="ml-2 transition-transform duration-300 group-hover:translate-x-1 font-bold">
+                    →
+                  </span>
+                </Link>
 
               </div>
             </div>

@@ -2,8 +2,14 @@
 
 import Link from "next/link";
 import { useState } from "react";
+import { useRouter, useSearchParams } from "next/navigation";
+import { useAuth } from "@/components/AuthContext";
 
 export default function LoginPage() {
+  const router = useRouter();
+  const searchParams = useSearchParams();
+  const redirect = searchParams.get("redirect") || "/";
+  const { login } = useAuth();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
@@ -39,8 +45,10 @@ export default function LoginPage() {
         setError(data.message || "Login failed");
         return;
       }
-       localStorage.setItem("token", data.token);
+      
+      login(data.token, data.user.id);
       setMessage("Login successful!");
+      router.push(redirect);
 
       console.log("Login response:", data);
     } catch (error) {
