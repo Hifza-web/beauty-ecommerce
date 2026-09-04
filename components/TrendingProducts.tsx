@@ -4,6 +4,8 @@ import { Heart, Star, ShoppingCart, CheckCircle } from "lucide-react";
 import { useCart } from "@/components/CartContext";
 import { useWishlist } from "@/components/WishlistContext";
 import { useState } from "react";
+import Link from "next/link";
+
 
 const products = [
   {
@@ -132,7 +134,10 @@ export default function TrendingProducts() {
         {/* Products */}
         <div className="grid grid-cols-1 gap-8 sm:grid-cols-2 lg:grid-cols-4">
           {products.map((product) => (
-            <div key={product.id} className="group flex flex-col">
+            <div key={product.id} 
+            className="group flex flex-col overflow-hidden rounded-2xl shadow-[0_8px_25px_rgba(69,54,51,0.08)] transition-all duration-300 hover:-translate-y-1 hover:shadow-[0_15px_35px_rgba(69,54,51,0.14)]"
+            // className="group flex flex-col"
+            >
 
               {/* Image & Top Badges */}
               <div className="relative aspect-square overflow-hidden bg-[#f7eef1]">
@@ -199,6 +204,14 @@ export default function TrendingProducts() {
               </div>
             </div>
           ))}
+        </div>
+          <div className="mt-12 flex justify-center">
+          <Link
+            href="/shop"
+            className="rounded-full border border-[#453633] px-8 py-4 text-sm uppercase tracking-[0.18em] text-[#453633] transition duration-300 hover:bg-[#d4a6b6] hover:text-white"
+          >
+            View All Products
+          </Link>
         </div>
       </div>
     </section>
