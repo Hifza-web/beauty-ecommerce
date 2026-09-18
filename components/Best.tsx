@@ -3,8 +3,9 @@
 import { Heart, Star, ShoppingCart, CheckCircle } from "lucide-react";
 import { useCart } from "@/components/CartContext";
 import { useWishlist } from "@/components/WishlistContext";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import Link from "next/link";
+import api from "@/lib/api";
 
 const products = [
   {
@@ -57,6 +58,23 @@ export default function Best() {
   const { addToCart } = useCart();
   const { addToWishlist, removeFromWishlist, isInWishlist } = useWishlist();
   const [toast, setToast] = useState("");
+  const [liveProducts, setLiveProducts] = useState(products);
+
+  useEffect(() => {
+    api.get("/products")
+      .then(res => {
+        const dbProducts = res.data.products || [];
+        const updated = products.map(p => {
+          const match = dbProducts.find((dbP: any) => dbP.name === p.name);
+          if (match) {
+            return { ...p, id: match._id };
+          }
+          return p;
+        });
+        setLiveProducts(updated);
+      })
+      .catch(err => console.error("Failed to sync best products", err));
+  }, []);
 
   const showToast = (msg: string) => {
     setToast(msg);
@@ -115,7 +133,7 @@ export default function Best() {
 
         {/* Products */}
         <div className="grid grid-cols-1 gap-8 sm:grid-cols-2 lg:grid-cols-4">
-          {products.map((product) => (
+          {liveProducts.map((product) => (
             <div
               key={product.id}
               className="group flex flex-col overflow-hidden rounded-2xl shadow-[0_8px_25px_rgba(69,54,51,0.08)] transition-all duration-300 hover:-translate-y-1 hover:shadow-[0_15px_35px_rgba(69,54,51,0.14)]"

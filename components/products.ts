@@ -8,6 +8,7 @@ export type Product = {
   category: string;
   badge?: "NEW" | "BESTSELLER" | "VEGAN";
   description: string;
+  stock?: number;
 };
 
 export const products: Product[] = [

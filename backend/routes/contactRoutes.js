@@ -29,6 +29,18 @@ router.post("/", async (req, res) => {
       message,
     });
 
+    // Send email notification to Admin
+    const sendEmail = require("../utils/sendEmail");
+    if (process.env.EMAIL_USER) {
+      await sendEmail(process.env.EMAIL_USER, null, "admin-contact", {
+        firstName,
+        lastName,
+        email,
+        subject,
+        message,
+      });
+    }
+
     res.status(201).json({
       message: "Your message has been sent successfully",
       contact: {

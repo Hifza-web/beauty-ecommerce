@@ -1,28 +1,84 @@
+"use client";
 import Link from "next/link";
+import { useState } from "react";
 
 export default function Footer() {
+  const [email, setEmail] = useState("");
+  const [newsletterMessage, setNewsletterMessage] = useState("");
+  const [newsletterError, setNewsletterError] = useState("");
+  const [isSubscribing, setIsSubscribing] = useState(false);
+  const handleSubscribe = async () => {
+    setNewsletterMessage("");
+    setNewsletterError("");
+
+    if (!email) {
+      setNewsletterError("Please enter your email address.");
+      return;
+    }
+
+    setIsSubscribing(true);
+
+    try {
+      const response = await fetch(
+        "http://localhost:5000/api/newsletter/subscribe",
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({ email }),
+        },
+      );
+
+      const data = await response.json();
+
+      if (!response.ok) {
+        setNewsletterError(data.message || "Failed to subscribe.");
+        return;
+      }
+
+      setNewsletterMessage(data.message);
+      setEmail("");
+    } catch (error) {
+      console.error("Newsletter error:", error);
+      setNewsletterError("Unable to connect to the server.");
+    } finally {
+      setIsSubscribing(false);
+    }
+  };
   return (
     <footer className="bg-[#faf2f4] text-[#171717]">
       {/* Newsletter */}
       <div className="border-b border-[#eadde0]">
         <div className="mx-auto flex max-w-7xl flex-col gap-6 px-6 py-12 md:flex-row md:items-center md:justify-between lg:px-8">
-          <h2 className="text-2xl font-medium font-[Marcellus]">Subscribe to our newsletter</h2>
+          <h2 className="text-2xl font-medium font-[Marcellus]">
+            Subscribe to our newsletter
+          </h2>
 
           <div className="flex w-full max-w-2xl flex-col gap-4 sm:flex-row">
             <input
               type="email"
               placeholder="Your email address *"
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
               className="w-full h-12 sm:flex-1 border border-[#d9aeb7] bg-transparent px-4 text-sm outline-none placeholder:text-[#9a858a] rounded-lg"
             />
 
             <button
               type="button"
-            //   className="h-12 min-w-[170px] bg-black px-6 text-sm font-medium text-white transition hover:bg-[#333] rounded-lg cursor-pointer"
-                          className="h-12 w-full sm:w-auto sm:min-w-[170px] bg-black px-6 text-sm font-medium text-white transition hover:bg-[#333] rounded-lg cursor-pointer"
-
+              onClick={handleSubscribe}
+              disabled={isSubscribing}
+              className="h-12 w-full sm:w-auto sm:min-w-[170px] bg-black px-6 text-sm font-medium text-white transition hover:bg-[#333] rounded-lg cursor-pointer disabled:opacity-60"
             >
-              SUBSCRIBE
+              {isSubscribing ? "SUBSCRIBING..." : "SUBSCRIBE"}
             </button>
+            {newsletterError && (
+              <p className="mt-2 text-sm text-red-600">{newsletterError}</p>
+            )}
+
+            {newsletterMessage && (
+              <p className="mt-2 text-sm text-green-600">{newsletterMessage}</p>
+            )}
           </div>
         </div>
       </div>
@@ -33,13 +89,14 @@ export default function Footer() {
           {/* Logo */}
           <div className="flex flex-col items-start">
             <Link href="/" className="text-3xl font-bold tracking-tight">
-               LUM
+              LUM
               <span className="text-[#d4a6b6]">É</span>RA
             </Link>
 
-    <p className="mt-4 max-w-xs text-sm leading-6 text-[#5f5659]">
-      Discover beauty essentials made to inspire confidence and enhance your everyday glow.
-    </p>
+            <p className="mt-4 max-w-xs text-sm leading-6 text-[#5f5659]">
+              Discover beauty essentials made to inspire confidence and enhance
+              your everyday glow.
+            </p>
           </div>
 
           {/* Shop Links */}

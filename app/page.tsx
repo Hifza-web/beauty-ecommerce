@@ -1,4 +1,4 @@
-
+import type { Metadata } from "next";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import TrendingProducts from "@/components/TrendingProducts";
@@ -7,6 +7,11 @@ import Hero from "@/components/Hero";
 import BeautyBanner from "@/components/BeautyBanner";
 import Best from "@/components/Best";
 import Reviews from "@/components/reviews";
+export const metadata: Metadata = {
+  title: "Home",
+  description:
+    "Welcome to LUMÉRA — discover premium makeup, skincare, and hair care essentials.",
+};
 
 export default function Home() {
 

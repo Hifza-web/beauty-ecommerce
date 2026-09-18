@@ -148,6 +148,52 @@ router.get("/profile", protect, async (req, res) => {
     });
   }
 });
+router.put("/profile", protect, async (req, res) => {
+  try {
+    const {
+      firstName,
+      lastName,
+      phone,
+      shippingAddress,
+    } = req.body;
+
+    const user = await User.findById(req.user.userId);
+
+    if (!user) {
+      return res.status(404).json({
+        message: "User not found",
+      });
+    }
+
+    user.firstName = firstName || user.firstName;
+    user.lastName = lastName || user.lastName;
+    user.phone = phone || "";
+    user.shippingAddress = shippingAddress || {
+      address: "",
+      city: "",
+      country: "Pakistan",
+    };
+
+    await user.save();
+
+    res.status(200).json({
+      message: "Profile updated successfully",
+      user: {
+        firstName: user.firstName,
+        lastName: user.lastName,
+        email: user.email,
+        phone: user.phone,
+        shippingAddress: user.shippingAddress,
+      },
+    });
+  } catch (error) {
+    console.error("Profile update error:", error);
+
+    res.status(500).json({
+      message: "Failed to update profile",
+    });
+  }
+});
 router.get("/verify-email", async (req, res) => {
   try {
     const { token } = req.query;

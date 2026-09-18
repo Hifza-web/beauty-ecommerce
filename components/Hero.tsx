@@ -79,7 +79,7 @@ useEffect(() => {
 
         <Link
           href="/shop"
-          className="mt-8 inline-block bg-white px-8 py-4 text-sm font-medium uppercase tracking-wide text-black transition hover:text-[#D4A6B6]"
+          className="mt-8 rounded-md inline-block bg-white px-8 py-4 text-sm font-medium uppercase tracking-wide text-black transition hover:text-[#D4A6B6]"
         >
           Shop Now
         </Link>

@@ -22,7 +22,7 @@ const orderItemSchema = new mongoose.Schema(
   },
   {
     _id: false,
-  }
+  },
 );
 
 const orderSchema = new mongoose.Schema(
@@ -68,6 +68,11 @@ const orderSchema = new mongoose.Schema(
         required: true,
         trim: true,
       },
+      phone: {
+        type: String,
+        required: true,
+        trim: true,
+      },
     },
 
     paymentMethod: {
@@ -75,22 +80,25 @@ const orderSchema = new mongoose.Schema(
       default: "Cash on Delivery",
       trim: true,
     },
+    paymentStatus: {
+      type: String,
+      enum: ["Pending", "Paid", "Failed"],
+      default: "Pending",
+    },
+    stripeSessionId: {
+      type: String,
+      trim:true,
+    },
 
     orderStatus: {
       type: String,
-      enum: [
-        "Pending",
-        "Processing",
-        "Shipped",
-        "Delivered",
-        "Cancelled",
-      ],
+      enum: ["Pending", "Processing", "Shipped", "Delivered", "Cancelled"],
       default: "Pending",
     },
   },
   {
     timestamps: true,
-  }
+  },
 );
 
 module.exports = mongoose.model("Order", orderSchema);
