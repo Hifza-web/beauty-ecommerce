@@ -2,15 +2,15 @@ import type { NextConfig } from "next";
 
 const nextConfig: NextConfig = {
   async rewrites() {
-    if (process.env.NODE_ENV !== 'production') {
-      return [
-        {
-          source: "/api/:path*",
-          destination: "http://localhost:5000/api/:path*", // Proxy to backend
-        },
-      ];
-    }
-    return [];
+    const backendUrl = process.env.NEXT_PUBLIC_API_URL || "http://localhost:5000/api";
+    // We must ensure backendUrl doesn't have a trailing slash, or we handle it gracefully.
+    // If NEXT_PUBLIC_API_URL is already "https://.../api", appending "/:path*" works: "https://.../api/:path*"
+    return [
+      {
+        source: "/api/:path*",
+        destination: `${backendUrl}/:path*`, // Proxy to backend
+      },
+    ];
   },
 };
 
