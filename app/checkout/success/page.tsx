@@ -5,12 +5,12 @@ import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import Link from "next/link";
 import { CheckCircle2, ShoppingBag } from "lucide-react";
-import { useEffect, useState } from "react";
+import { useEffect, useState, Suspense } from "react";
 import { useSearchParams } from "next/navigation";
 import api from "@/lib/api";
 import { useCart } from "@/components/CartContext";
 
-export default function OrderSuccessPage() {
+function OrderSuccessContent() {
   const searchParams = useSearchParams();
   const sessionId = searchParams.get("session_id");
 
@@ -127,6 +127,18 @@ export default function OrderSuccessPage() {
 
       <Footer />
     </>
+  );
+}
+
+export default function OrderSuccessPage() {
+  return (
+    <Suspense fallback={
+      <div className="flex h-screen items-center justify-center bg-[#fcf9f6]">
+        <div className="h-10 w-10 animate-spin rounded-full border-4 border-[#e7dcd7] border-t-[#b65f67]" />
+      </div>
+    }>
+      <OrderSuccessContent />
+    </Suspense>
   );
 }
 
