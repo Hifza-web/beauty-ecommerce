@@ -67,9 +67,9 @@ export default function Best() {
         const updated = products.map(p => {
           const match = dbProducts.find((dbP: any) => dbP.name === p.name);
           if (match) {
-            return { ...p, id: match._id };
+            return { ...p, id: match._id, stock: match.stock || 10 };
           }
-          return p;
+          return { ...p, stock: 10 };
         });
         setLiveProducts(updated);
       })
@@ -90,6 +90,7 @@ export default function Best() {
       category: product.category,
       description: product.description,
       rating: parseFloat(product.rating),
+      stock: product.stock,
     });
     showToast(`${product.name} added to cart`);
   };
