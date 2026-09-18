@@ -54,14 +54,15 @@ export const listenForForegroundNotifications = async () => {
         console.log("Foreground message received:", payload);
         
         if (Notification.permission === "granted" && payload.notification) {
+          const notification = payload.notification;
           navigator.serviceWorker.getRegistration().then((registration) => {
             if (registration) {
-              registration.showNotification(payload.notification.title || "Notification", {
-                body: payload.notification.body,
+              registration.showNotification(notification.title || "Notification", {
+                body: notification.body,
               });
             } else {
-              new Notification(payload.notification.title || "Notification", {
-                body: payload.notification.body,
+              new Notification(notification.title || "Notification", {
+                body: notification.body,
               });
             }
           });

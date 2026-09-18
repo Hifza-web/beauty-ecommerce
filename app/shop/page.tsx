@@ -581,7 +581,7 @@ function ShopContent() {
               ) : (
                 <>
                   <div className="mb-10 flex items-center justify-between">
-                    {(search || category !== "All") && (
+                    {(search || category.length > 0) && (
                       <button
                         onClick={() => {
                           setSearch("");
