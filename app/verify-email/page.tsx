@@ -68,8 +68,9 @@ function VerifyEmailContent() {
   }
 
   try {
+    const apiUrl = process.env.NEXT_PUBLIC_API_URL || "https://beauty-ecommerce-mh7p.vercel.app/api";
     const response = await fetch(
-      "/api/auth/verify-email",
+      `${apiUrl}/auth/verify-email`,
       {
         method: "POST",
         headers: {
@@ -101,8 +102,9 @@ const handleResend = async () => {
   setError("");
 
   try {
+    const apiUrl = process.env.NEXT_PUBLIC_API_URL || "https://beauty-ecommerce-mh7p.vercel.app/api";
     const response = await fetch(
-      "/api/auth/resend-code",
+      `${apiUrl}/auth/resend-code`,
       {
         method: "POST",
         headers: {

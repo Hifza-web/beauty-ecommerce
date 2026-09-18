@@ -36,7 +36,8 @@ export default function SignupPage() {
     try {
       setLoading(true);
 
-      const response = await fetch("/api/auth/signup", {
+      const apiUrl = process.env.NEXT_PUBLIC_API_URL || "https://beauty-ecommerce-mh7p.vercel.app/api";
+      const response = await fetch(`${apiUrl}/auth/signup`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",

@@ -41,8 +41,8 @@ export default function ProfilePage() {
       }
 
       try {
-        const response = await fetch("/api/auth/profile", {
-          method: "GET",
+        const apiUrl = process.env.NEXT_PUBLIC_API_URL || "https://beauty-ecommerce-mh7p.vercel.app/api";
+        const response = await fetch(`${apiUrl}/auth/profile`, {
           headers: {
             Authorization: `Bearer ${token}`,
           },
@@ -101,8 +101,8 @@ export default function ProfilePage() {
     }
 
     try {
-      const response = await fetch("/api/auth/profile", {
-        method: "PUT",
+      const apiUrl = process.env.NEXT_PUBLIC_API_URL || "https://beauty-ecommerce-mh7p.vercel.app/api";
+      const response = await fetch(`${apiUrl}/auth/profile`, {
         headers: {
           "Content-Type": "application/json",
           Authorization: `Bearer ${token}`,

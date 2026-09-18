@@ -32,7 +32,8 @@ export default function CheckoutPage() {
       if (!token) return;
 
       try {
-        const response = await fetch("/api/auth/profile", {
+        const apiUrl = process.env.NEXT_PUBLIC_API_URL || "https://beauty-ecommerce-mh7p.vercel.app/api";
+        const response = await fetch(`${apiUrl}/auth/profile`, {
           method: "GET",
           headers: {
             Authorization: `Bearer ${token}`,
