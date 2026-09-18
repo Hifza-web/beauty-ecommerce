@@ -19,27 +19,30 @@ const notificationRoutes = require("./routes/notificationRoutes");
 const app = express();
 const server = http.createServer(app);
 
-const io = new Server(server, {
-  cors: {
-    origin: "*",
-  },
-});
-
-io.on("connection", (socket) => {
-  console.log("User connected:", socket.id);
-  socket.on("joinUserRoom", (userId) => {
-  socket.join(`user_${userId}`);
-  console.log(`User joined room: user_${userId}`);
-});
-
-   socket.on("sendNotification", (message) => {
-    io.emit("notification", message);
+let io = null;
+if (process.env.NODE_ENV !== "production") {
+  io = new Server(server, {
+    cors: {
+      origin: "*",
+    },
   });
 
-  socket.on("disconnect", () => {
-    console.log("User disconnected:", socket.id);
+  io.on("connection", (socket) => {
+    console.log("User connected:", socket.id);
+    socket.on("joinUserRoom", (userId) => {
+      socket.join(`user_${userId}`);
+      console.log(`User joined room: user_${userId}`);
+    });
+
+    socket.on("sendNotification", (message) => {
+      io.emit("notification", message);
+    });
+
+    socket.on("disconnect", () => {
+      console.log("User disconnected:", socket.id);
+    });
   });
-});
+}
 
 app.use(cors());
 app.use(express.json());
@@ -55,14 +58,14 @@ app.use("/api/stripe", stripeRoutes);
 app.use("/api/admin", adminRoutes);
 app.use("/api/newsletter", newsletterRoutes);
 app.use("/api/notifications", notificationRoutes);
-mongoose
-  .connect(process.env.MONGO_URI)
-  .then(() => {
-    console.log("MongoDB connected successfully!");
-  })
-  .catch((error) => {
-    console.error("MongoDB connection failed:", error.message);
-  });
+if (process.env.MONGO_URI) {
+  mongoose
+    .connect(process.env.MONGO_URI)
+    .then(() => console.log("MongoDB connected successfully!"))
+    .catch((error) => console.error("MongoDB connection failed:", error.message));
+} else {
+  console.error("CRITICAL ERROR: MONGO_URI is not set in environment variables!");
+}
 
 app.get("/", (req, res) => {
   res.send("LUMÉRA Backend is running!");
