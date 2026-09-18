@@ -20,7 +20,8 @@ export default function ForgotPasswordPage() {
   }
 
   try {
-    const response = await fetch("/api/auth/forgot-password", {
+    const apiUrl = process.env.NEXT_PUBLIC_API_URL || "https://beauty-ecommerce-mh7p.vercel.app/api";
+    const response = await fetch(`${apiUrl}/auth/forgot-password`, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",

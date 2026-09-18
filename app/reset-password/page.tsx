@@ -42,8 +42,9 @@ function ResetPasswordContent() {
   }
 
   try {
+    const apiUrl = process.env.NEXT_PUBLIC_API_URL || "https://beauty-ecommerce-mh7p.vercel.app/api";
     const response = await fetch(
-      "/api/auth/reset-password",
+      `${apiUrl}/auth/reset-password`,
       {
         method: "POST",
         headers: {
