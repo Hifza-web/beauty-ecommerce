@@ -4,6 +4,7 @@ import Link from "next/link";
 import { useState, Suspense } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import { useAuth } from "@/components/AuthContext";
+import { Eye, EyeOff } from "lucide-react";
 
 function LoginForm() {
   const router = useRouter();
@@ -45,7 +46,7 @@ function LoginForm() {
         setError(data.message || "Login failed");
         return;
       }
-      
+
       login(data.token, data.user.id);
       setMessage("Login successful!");
       router.push(redirect);
@@ -87,10 +88,7 @@ function LoginForm() {
           </h1>
           <p className="text-[#a89ab0] text-[14px] mb-[30px]">
             Log in to your LUMÉRA account.{" "}
-            <Link
-              href="/signup"
-              className="text-[#d4a8c4] underline"
-            >
+            <Link href="/signup" className="text-[#d4a8c4] underline">
               Sign up
             </Link>
           </p>
@@ -114,10 +112,15 @@ function LoginForm() {
               className="w-full py-[13px] pr-[44px] pl-[16px] bg-[#2d2438] border-[1.5px] border-transparent rounded-[10px] text-[#fff] text-[14px] outline-none box-border"
             />
             <button
+              type="button"
               onClick={() => setShowPassword(!showPassword)}
-              className="absolute right-[14px] top-1/2 -translate-y-1/2 bg-transparent border-none cursor-pointer text-[#a89ab0] text-[16px]"
+              className="absolute right-[14px] top-1/2 -translate-y-1/2 bg-transparent border-none cursor-pointer"
             >
-              👁
+              {showPassword ? (
+                <EyeOff className="w-5 h-5 text-[#a89ab0] hover:text-[#d7aba8] transition-colors" />
+              ) : (
+                <Eye className="w-5 h-5 text-[#a89ab0] hover:text-[#d7aba8] transition-colors" />
+              )}
             </button>
           </div>
 
@@ -131,15 +134,11 @@ function LoginForm() {
             </Link>
           </div>
           {error && (
-            <p className="text-[#ff8f8f] text-[13px] mb-[14px]">
-              {error}
-            </p>
+            <p className="text-[#ff8f8f] text-[13px] mb-[14px]">{error}</p>
           )}
 
           {message && (
-            <p className="text-[#9ed6a8] text-[13px] mb-[14px]">
-              {message}
-            </p>
+            <p className="text-[#9ed6a8] text-[13px] mb-[14px]">{message}</p>
           )}
           {/* Login Button */}
           <button
@@ -157,7 +156,13 @@ function LoginForm() {
 
 export default function LoginPage() {
   return (
-    <Suspense fallback={<div className="flex h-screen items-center justify-center text-[#453633]">Loading...</div>}>
+    <Suspense
+      fallback={
+        <div className="flex h-screen items-center justify-center text-[#453633]">
+          Loading...
+        </div>
+      }
+    >
       <LoginForm />
     </Suspense>
   );

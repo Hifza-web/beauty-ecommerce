@@ -22,31 +22,35 @@ export type Product = {
   image: string;
   rating: number;
   category: string;
+  stock: number;
   badge?: "NEW" | "BESTSELLER" | "VEGAN";
   description: string;
   _id?: string;
+  oldPrice?: number;
 };
 
 export default function ProductDetailsPage() {
   const params = useParams();
   const productId = params?.id as string;
-  
+
   const [product, setProduct] = useState<Product | null>(null);
   const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
     if (productId) {
       setIsLoading(true);
-      api.get(`/products/${productId}`)
+      api
+        .get(`/products/${productId}`)
         .then((res) => {
           if (res.data.product) {
             setProduct({
               ...res.data.product,
-              id: res.data.product._id
+              id: res.data.product._id,
+              category: res.data.product.category?.name || "Beauty",
             });
           }
         })
-        .catch(err => console.error("Error fetching product:", err))
+        .catch((err) => console.error("Error fetching product:", err))
         .finally(() => setIsLoading(false));
     }
   }, [productId]);
@@ -55,8 +59,12 @@ export default function ProductDetailsPage() {
   const { addToWishlist, removeFromWishlist, isInWishlist } = useWishlist();
 
   // Use product image if found, else default
+  const mainImage = product?.image 
+    ? (product.image.startsWith("http") || product.image.startsWith("/") ? product.image : `/${product.image}`)
+    : "/1.jpg";
+    
   const images = product
-    ? [product.image, "/1-2.jpg", "/1-3.jpg", "/1-4.jpg"]
+    ? [mainImage, "/2.jpg", "/3.jpg", "/4.jpg"]
     : ["/1.jpg"];
 
   const [selectedImage, setSelectedImage] = useState(images[0]);
@@ -68,8 +76,8 @@ export default function ProductDetailsPage() {
 
   // Update selected image when product changes (e.g. initial load)
   useEffect(() => {
-    if (product) setSelectedImage(product.image);
-  }, [product]);
+    if (product) setSelectedImage(mainImage);
+  }, [product, mainImage]);
 
   if (isLoading) {
     return (
@@ -102,7 +110,7 @@ export default function ProductDetailsPage() {
         {/* BACK */}
         <Link
           href="/shop"
-          className="inline-flex text-xs uppercase tracking-[0.2em] text-[#806e68] transition hover:text-[#b65f67]"
+          className="inline-flex text-xs font-bold uppercase tracking-[0.2em] text-black transition hover:text-[#b65f67]"
         >
           ← Back to Shop
         </Link>
@@ -124,7 +132,7 @@ export default function ProductDetailsPage() {
               {/* IMAGE LABEL */}
               {product.badge && (
                 <div className="absolute left-5 top-5">
-                  <span className="bg-[#453633] px-4 py-2 text-[10px] uppercase tracking-[0.2em] text-white">
+                  <span className="rounded-lg bg-[#453633] px-4 py-2 text-[10px] uppercase tracking-[0.2em] text-white">
                     {product.badge}
                   </span>
                 </div>
@@ -176,7 +184,16 @@ export default function ProductDetailsPage() {
             </div>
 
             {/* PRICE */}
-            <p className="mt-4 text-2xl font-medium">${product.price}.00</p>
+            <div className="mt-4 flex items-center gap-3">
+              {product.oldPrice && (
+                <span className="text-xl text-gray-400 line-through">
+                  ${product.oldPrice}.00
+                </span>
+              )}
+              <span className="text-2xl font-medium text-[#b65f67]">
+                ${product.price}.00
+              </span>
+            </div>
 
             {/* DESCRIPTION */}
             <div className="mt-6">
@@ -207,8 +224,13 @@ export default function ProductDetailsPage() {
 
                 <button
                   type="button"
-                  onClick={() => setQuantity((prev) => prev + 1)}
-                  className="flex h-14 w-12 items-center justify-center text-[#806e68] transition hover:text-[#b65f67]"
+                  onClick={() => {
+                    if (quantity < product.stock) {
+                      setQuantity((prev) => prev + 1);
+                    }
+                  }}
+                  disabled={quantity >= product.stock}
+                  className="flex h-14 w-12 items-center justify-center text-[#806e68] transition hover:text-[#b65f67] disabled:cursor-not-allowed disabled:opacity-40"
                 >
                   <Plus className="h-4 w-4" />
                 </button>
@@ -254,17 +276,18 @@ export default function ProductDetailsPage() {
               type="button"
               onClick={() => {
                 addToCart(
-  {
-    id: product.id,
-    name: product.name,
-    price: product.price,
-    image: selectedImage,
-    category: product.category,
-    rating: product.rating,
-    description: product.description,
-  },
-  quantity
-);
+                  {
+                    id: product.id,
+                    name: product.name,
+                    price: product.price,
+                    image: selectedImage,
+                    category: product.category,
+                    rating: product.rating,
+                    description: product.description,
+                    stock: product.stock,
+                  },
+                  quantity,
+                );
                 setToastType("cart");
                 setToast(`${product.name} added to bag`);
 

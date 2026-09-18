@@ -11,7 +11,9 @@ router.post("/sync", async (req, res) => {
     const { userId, items } = req.body;
 
     if (!userId || !Array.isArray(items)) {
-      return res.status(400).json({ message: "userId and items array are required" });
+      return res
+        .status(400)
+        .json({ message: "userId and items array are required" });
     }
 
     let cart = await Cart.findOne({ user: userId });
@@ -24,23 +26,38 @@ router.post("/sync", async (req, res) => {
     for (const localItem of items) {
       const productId = localItem.id; // frontend sends 'id'
       const quantity = localItem.quantity;
-      
+      const product = await Product.findById(productId);
+
+      if (!product) {
+        continue;
+      }
+
+      if (quantity > product.stock) {
+        continue;
+      }
+
       const existingItem = cart.items.find(
-        (item) => item.product.toString() === productId
+        (item) => item.product.toString() === productId,
       );
 
       if (existingItem) {
-        existingItem.quantity += quantity;
+        const newQuantity = existingItem.quantity + quantity;
+
+        if (newQuantity > product.stock) {
+          existingItem.quantity = product.stock;
+        } else {
+          existingItem.quantity = newQuantity;
+        }
       } else {
         cart.items.push({
           product: productId,
-          quantity: quantity
+          quantity: quantity,
         });
       }
     }
 
     await cart.save();
-    await cart.populate("items.product");
+    await cart.populate({ path: "items.product", populate: { path: "category" } });
 
     res.status(200).json({
       message: "Cart synced successfully",
@@ -72,6 +89,11 @@ router.post("/add", async (req, res) => {
         message: "Product not found",
       });
     }
+    if (quantity > product.stock) {
+      return res.status(400).json({
+        message: `Out of stock! Only ${product.stock} items are available.`,
+      });
+    }
 
     let cart = await Cart.findOne({ user: userId });
 
@@ -87,11 +109,19 @@ router.post("/add", async (req, res) => {
       });
     } else {
       const existingItem = cart.items.find(
-        (item) => item.product.toString() === productId
+        (item) => item.product.toString() === productId,
       );
 
       if (existingItem) {
-        existingItem.quantity += quantity;
+        const newQuantity = existingItem.quantity + quantity;
+
+        if (newQuantity > product.stock) {
+          return res.status(400).json({
+            message: `Out of stock! Only ${product.stock} items are available.`,
+          });
+        }
+
+        existingItem.quantity = newQuantity;
       } else {
         cart.items.push({
           product: productId,
@@ -102,7 +132,7 @@ router.post("/add", async (req, res) => {
       await cart.save();
     }
 
-    await cart.populate("items.product");
+    await cart.populate({ path: "items.product", populate: { path: "category" } });
 
     res.status(200).json({
       message: "Product added to cart successfully",
@@ -120,7 +150,7 @@ router.get("/:userId", async (req, res) => {
   try {
     const cart = await Cart.findOne({
       user: req.params.userId,
-    }).populate("items.product");
+    }).populate({ path: "items.product", populate: { path: "category" } });
 
     if (!cart) {
       return res.status(200).json({
@@ -164,7 +194,7 @@ router.put("/update", async (req, res) => {
     }
 
     const item = cart.items.find(
-      (item) => item.product && item.product.toString() === productId
+      (item) => item.product && item.product.toString() === productId,
     );
 
     if (!item) {
@@ -172,11 +202,24 @@ router.put("/update", async (req, res) => {
         message: "Product not found in cart",
       });
     }
+    const product = await Product.findById(productId);
+
+    if (!product) {
+      return res.status(404).json({
+        message: "Product not found",
+      });
+    }
+
+    if (quantity > product.stock) {
+      return res.status(400).json({
+        message: `Out of stock! Only ${product.stock} items are available.`,
+      });
+    }
 
     item.quantity = quantity;
 
     await cart.save();
-    await cart.populate("items.product");
+    await cart.populate({ path: "items.product", populate: { path: "category" } });
 
     res.status(200).json({
       message: "Cart quantity updated successfully",
@@ -209,7 +252,7 @@ router.delete("/remove", async (req, res) => {
     }
 
     const itemExists = cart.items.some(
-      (item) => item.product.toString() === productId
+      (item) => item.product.toString() === productId,
     );
 
     if (!itemExists) {
@@ -219,11 +262,11 @@ router.delete("/remove", async (req, res) => {
     }
 
     cart.items = cart.items.filter(
-      (item) => item.product.toString() !== productId
+      (item) => item.product.toString() !== productId,
     );
 
     await cart.save();
-    await cart.populate("items.product");
+    await cart.populate({ path: "items.product", populate: { path: "category" } });
 
     res.status(200).json({
       message: "Product removed from cart successfully",

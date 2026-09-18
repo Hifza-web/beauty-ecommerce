@@ -208,8 +208,10 @@ type Product = {
   image: string;
   rating: number;
   category: string;
+  stock: number;
   badge?: "NEW" | "BESTSELLER" | "VEGAN";
   description: string;
+  oldPrice?: number;
 };
 
 type Props = {
@@ -226,158 +228,181 @@ export default function ProductCard({
   onAddToCart,
 }: Props) {
   // const [liked, setLiked] = useState(false);
- const { addToCart } = useCart();
-const { addToWishlist, removeFromWishlist, isInWishlist } = useWishlist();
+  const { addToCart } = useCart();
+  const { addToWishlist, removeFromWishlist, isInWishlist } = useWishlist();
 
-const liked = isInWishlist(product.id);
+  const liked = isInWishlist(product.id);
 
-const handleWishlist = () => {
-  if (isInWishlist(product.id)) {
-    removeFromWishlist(product.id);
-  } else {
-    addToWishlist({
+  const handleWishlist = () => {
+    if (isInWishlist(product.id)) {
+      removeFromWishlist(product.id);
+    } else {
+      addToWishlist({
+        id: product.id,
+        name: product.name,
+        price: product.price,
+        image: product.image,
+      });
+    }
+
+    onWishlist(product);
+  };
+  const handleAddToCart = () => {
+    addToCart({
       id: product.id,
       name: product.name,
       price: product.price,
       image: product.image,
+      category: product.category,
+      rating: product.rating,
+      description: product.description,
+      stock: product.stock,
     });
-  }
+  };
 
-  onWishlist(product);
-};
- const handleAddToCart = () => {
-  addToCart({
-    id: product.id,
-    name: product.name,
-    price: product.price,
-    image: product.image,
-    category: product.category,
-    rating: product.rating,
-    description: product.description,
-  });
-};
+return (
+  <article className="group overflow-hidden rounded-2xl bg-[#faf2f4] shadow-[0_8px_25px_rgba(69,54,51,0.08)] transition-all duration-300 hover:-translate-y-1 hover:shadow-[0_15px_35px_rgba(69,54,51,0.14)]">
 
-  return (
-    <article className="group">
-      {/* PRODUCT IMAGE AREA */}
-      {/* <div className="relative overflow-hidden rounded-[2px] bg-[#f3e7e2]"> */}
-      
-      <div className="relative overflow-hidden rounded-2xl bg-[#f3e7e2] shadow-[0_8px_30px_rgba(69,54,51,0.10)] transition-shadow duration-500 group-hover:shadow-[0_14px_40px_rgba(69,54,51,0.16)]">
-        {/* <div className="aspect-[4/5] overflow-hidden"> */}
-        <Link href={`/product/${product.id}`}>
-        <div className="aspect-[5/6] overflow-hidden">
-          <img
-            src={product.image}
-            alt={product.name}
-            className="h-full w-full object-cover transition-transform duration-700 ease-out group-hover:scale-[1.04]"
-          />
+    {/* PRODUCT IMAGE */}
+    <div className="relative aspect-square overflow-hidden bg-[#f7eef1]">
+
+      <Link href={`/product/${product.id}`}>
+        <img
+          src={product.image}
+          alt={product.name}
+          className="h-full w-full object-cover transition duration-500 group-hover:scale-105"
+        />
+      </Link>
+
+      {/* SALE DISCOUNT */}
+      {product.oldPrice && product.oldPrice > product.price && (
+        <div className="absolute left-5 top-[58px] z-10">
+          <span className="inline-block rounded-full bg-[#b65f67] px-3 py-2 text-[10px] font-semibold uppercase tracking-[0.15em] text-white shadow-md">
+            {Math.round(
+              ((product.oldPrice - product.price) / product.oldPrice) * 100
+            )}
+            % OFF
+          </span>
         </div>
-        </Link>
+      )}
 
-        {/* SOFT IMAGE OVERLAY */}
-        <div className="pointer-events-none absolute inset-0 bg-gradient-to-t from-black/10 via-transparent to-transparent opacity-0 transition-opacity duration-500 group-hover:opacity-100" />
+      {/* PRODUCT BADGE */}
+      {product.badge && (
+        <div className="absolute left-5 top-5 z-10">
+          <span
+            className={`inline-block rounded-full px-3 py-2 text-[10px] font-bold uppercase tracking-[0.18em] ${
+              product.badge === "NEW"
+                ? "bg-white text-[#a45b63]"
+                : product.badge === "VEGAN"
+                  ? "bg-[#eef1e9] text-[#65705b]"
+                  : "bg-[#453633] text-white"
+            }`}
+          >
+            {product.badge}
+          </span>
+        </div>
+      )}
 
-        {/* BADGE */}
-        {product.badge && (
-          <div className="absolute left-5 top-5">
-            <span
-              className={`inline-block px-3 py-2 text-[10px] uppercase tracking-[0.18em] ${
-                product.badge === "NEW"
-                  ? "bg-white text-[#a45b63]"
-                  : product.badge === "VEGAN"
-                    ? "bg-[#eef1e9] text-[#65705b]"
-                    : "bg-[#453633] text-white"
-              }`}
-            >
-              {product.badge}
-            </span>
-          </div>
-        )}
+      {/* WISHLIST */}
+      <button
+        type="button"
+        aria-label="Add to wishlist"
+        onClick={handleWishlist}
+        className="absolute right-5 top-5 z-10 flex h-10 w-10 items-center justify-center rounded-full bg-white text-[#333] shadow-md transition-all duration-300 hover:scale-105 hover:text-[#D4A6B6]"
+      >
+        <Heart
+          className={`h-5 w-5 transition-all duration-300 ${
+            liked
+              ? "fill-[#D4A6B6] text-[#D4A6B6]"
+              : "text-[#333]"
+          }`}
+        />
+      </button>
 
-        {/* WISHLIST */}
+      {/* HOVER ACTIONS — SAME AS BEFORE */}
+      <div className="absolute bottom-0 left-0 right-0 translate-y-full space-y-2 p-5 transition-transform duration-500 ease-out group-hover:translate-y-0">
         <button
           type="button"
-          aria-label="Add to wishlist"
-          onClick={handleWishlist}
-          className="absolute right-5 top-5 flex h-10 w-10 items-center justify-center rounded-full bg-white shadow-md transition-all duration-300 hover:scale-105 hover:text-[#D4A6B6]"
+          onClick={() => onAddToCart(product)}
+          className="w-full rounded-full bg-[#453633] py-4 text-[11px] uppercase tracking-[0.25em] text-white shadow-sm transition hover:bg-[#b65f67]"
         >
-          <Heart
-            className={`h-5 w-5 transition-all duration-300 ${
-              liked ? "fill-[#D4A6B6] text-[#D4A6B6]" : "text-[#333]"
-            }`}
-          />
+          Add to Bag
         </button>
 
-        {/* QUICK VIEW */}
-        {/* ACTIONS */}
-<div className="absolute bottom-0 left-0 right-0 translate-y-full space-y-2 p-5 transition-transform duration-500 ease-out group-hover:translate-y-0">
-  <button
-    onClick={() => onAddToCart(product)}
-    className="w-full bg-[#453633] py-4 text-[11px] uppercase tracking-[0.25em] text-white shadow-sm transition hover:bg-[#b65f67]"
-  >
-    Add to Bag
-  </button>
-
-  <button
-    onClick={() => onQuickView(product)}
-    className="w-full bg-white/95 py-3 text-[11px] uppercase tracking-[0.25em] text-[#453633] shadow-sm backdrop-blur-sm transition hover:bg-[#f5e0dc]"
-  >
-    Quick View
-  </button>
-</div>
+        <button
+          type="button"
+          onClick={() => onQuickView(product)}
+          className="w-full rounded-full bg-white/95 py-3 text-[11px] uppercase tracking-[0.25em] text-[#453633] shadow-sm backdrop-blur-sm transition hover:bg-[#f5e0dc]"
+        >
+          Quick View
+        </button>
       </div>
+    </div>
 
-      {/* PRODUCT INFORMATION */}
-      <div className="pt-6">
-        {/* CATEGORY + RATING */}
-        <div className="flex items-center justify-between">
-          <p className="text-sm uppercase tracking-[0.2em] text-[#b65f67]">
-            {product.category}
-          </p>
+    {/* PRODUCT INFORMATION — TRENDING PRODUCTS STYLE */}
+    <div className="flex flex-col border-t border-[#f0f0f0] bg-[#faf2f4] p-5">
 
-          <div className="flex items-center gap-2">
-            <div className="flex items-center gap-[2px] text-sm">
-              {[1, 2, 3, 4, 5].map((star) => (
-                <span
-                  key={star}
-                  className={
-                    star <= Math.floor(product.rating)
-                      ? "text-[#c98b6d]"
-                      : "text-[#d9cbc5]"
-                  }
-                >
-                  ★
-                </span>
-              ))}
-            </div>
+      {/* CATEGORY + RATING */}
+      <div className="flex items-center justify-between text-xs font-semibold tracking-wider text-black">
+        <span className="uppercase">
+          {product.category}
+        </span>
 
-            <span className="text-xs text-[#806e68]">
-              ({product.rating.toFixed(1)})
-            </span>
+        <div className="flex items-center gap-1">
+          <div className="flex items-center gap-[2px]">
+            {[1, 2, 3, 4, 5].map((star) => (
+              <span
+                key={star}
+                className={
+                  star <= Math.floor(product.rating)
+                    ? "text-[#f59e0b]"
+                    : "text-[#d9cbc5]"
+                }
+              >
+                ★
+              </span>
+            ))}
           </div>
+
+          <span className="font-bold text-gray-900">
+            {product.rating.toFixed(1)}
+          </span>
         </div>
-
-        {/* NAME + PRICE */}
-        <div className="mt-2 flex items-start justify-between gap-5">
-          <Link href={`/product/${product.id}`}>
-          <h3 className="font-serif text-[22px] leading-tight text-[#453633] transition-colors duration-300 group-hover:text-[#b65f67]">
-            {product.name}
-          </h3>
-          </Link>
-
-          <p className="pt-1 text-base font-medium text-[#453633]">
-            ${product.price}
-          </p>
-        </div>
-
-        {/* DESCRIPTION */}
-        <p className="mt-2 line-clamp-2 text-sm leading-6 text-[#927d77]">
-          {product.description}
-        </p>
-
-        {/* UNDERLINE */}
-        {/* <div className="mt-5 h-px w-0 bg-[#b65f67] transition-all duration-500 group-hover:w-full" /> */}
       </div>
-    </article>
-  );
+
+      {/* PRODUCT NAME */}
+      <Link href={`/product/${product.id}`}>
+        <h3 className="mt-3 line-clamp-1 text-[17px] font-bold text-gray-900 transition-colors group-hover:text-[#b65f67]">
+          {product.name}
+        </h3>
+      </Link>
+
+      {/* DESCRIPTION */}
+      <p className="mt-2 line-clamp-2 text-sm leading-relaxed text-gray-500">
+        {product.description}
+      </p>
+
+      {/* DIVIDER */}
+      <div className="my-5 border-t border-gray-200" />
+
+      {/* PRICE */}
+      <div className="flex items-center justify-between">
+        <div className="flex items-center gap-2">
+          <span className="text-2xl font-bold text-gray-900">
+            ${product.price}
+          </span>
+
+          {product.oldPrice && (
+            <span className="text-sm text-gray-400 line-through">
+              ${product.oldPrice}
+            </span>
+          )}
+        </div>
+
+       
+      </div>
+
+    </div>
+  </article>
+);
 }

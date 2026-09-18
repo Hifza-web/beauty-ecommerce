@@ -6,14 +6,26 @@ import Link from "next/link";
 import { Heart, Trash2, ShoppingBag, ArrowRight } from "lucide-react";
 import { useWishlist } from "@/components/WishlistContext";
 import { useCart } from "@/components/CartContext";
-import { useState } from "react";
-import { products } from "@/components/products";
+import { useState, useEffect } from "react";
 
 
 export default function WishlistPage() {
   const { wishlist, removeFromWishlist } = useWishlist();
   const { addToCart } = useCart();
   const [toast, setToast] = useState("");
+  const [dbProducts, setDbProducts] = useState<any[]>([]);
+
+  useEffect(() => {
+    import("@/lib/api").then(({ default: api }) => {
+      api.get("/products")
+        .then((res) => {
+          if (res.data.products) {
+            setDbProducts(res.data.products);
+          }
+        })
+        .catch((err) => console.error("Failed to fetch products for wishlist:", err));
+    });
+  }, []);
 
   const showToast = (message: string) => {
     setToast(message);
@@ -122,8 +134,9 @@ export default function WishlistPage() {
 
               {wishlist.map((product) => {
 
-                const fullProduct = products.find(
-                  (item) => item.id === product.id
+                // Now we find the matching product from the live database
+                const fullProduct = dbProducts.find(
+                  (item) => String(item._id) === String(product.id) || String(item.id) === String(product.id)
                 );
 
                 return (
@@ -175,7 +188,7 @@ export default function WishlistPage() {
                       {fullProduct?.category && (
                         // <p className="text-[9px] uppercase tracking-[0.25em] text-[#b65f67]">
                         <p className="text-sm uppercase tracking-[0.2em] text-[#b65f67]">
-                          {fullProduct.category}
+                          {fullProduct.category.name || fullProduct.category}
                         </p>
                       )}
 
@@ -220,6 +233,10 @@ export default function WishlistPage() {
                               name: product.name,
                               price: product.price,
                               image: product.image,
+                              stock: fullProduct?.stock || 0,
+                              category: fullProduct?.category?.name || fullProduct?.category,
+                              description: fullProduct?.description,
+                              rating: fullProduct?.rating,
                             });
                             
                             removeFromWishlist(product.id);

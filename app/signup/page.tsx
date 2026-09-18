@@ -3,6 +3,7 @@
 import Link from "next/link";
 import { useState } from "react";
 import { useRouter } from "next/navigation";
+import { Eye, EyeOff } from "lucide-react";
 
 export default function SignupPage() {
   const router = useRouter();
@@ -23,10 +24,10 @@ export default function SignupPage() {
       setError("All fields are required");
       return;
     }
-       if (password.length < 8) {
-  setError("Password must be at least 8 characters long");
-  return;
-}
+    if (password.length < 8) {
+      setError("Password must be at least 8 characters long");
+      return;
+    }
     if (!agreed) {
       setError("Please agree to the Terms & Conditions");
       return;
@@ -55,7 +56,7 @@ export default function SignupPage() {
         return;
       }
 
-     router.push(`/verify-email?email=${encodeURIComponent(email)}`);
+      router.push(`/verify-email?email=${encodeURIComponent(email)}`);
     } catch (error) {
       console.error("Signup error:", error);
       setError("Unable to connect to the server");
@@ -93,10 +94,7 @@ export default function SignupPage() {
             </h1>
             <p className="text-[#a89ab0] text-[14px] mb-[30px]">
               Already have an account?{" "}
-              <Link
-                href="/login"
-                className="text-[#d4a8c4] underline"
-              >
+              <Link href="/login" className="text-[#d4a8c4] underline">
                 Log in
               </Link>
             </p>
@@ -141,11 +139,57 @@ export default function SignupPage() {
                 className="w-full py-[13px] pr-[44px] pl-[16px] bg-[#2d2438] border-[1.5px] border-transparent rounded-[10px] text-[#fff] text-[14px] outline-none box-border"
               />
               <button
+                type="button"
                 onClick={() => setShowPassword(!showPassword)}
-                className="absolute right-[14px] top-1/2 -translate-y-1/2 bg-transparent border-none cursor-pointer text-[#a89ab0] text-[16px]"
+                className="absolute right-[14px] top-1/2 -translate-y-1/2 bg-transparent border-none cursor-pointer"
               >
-                👁
+                {showPassword ? (
+                  <EyeOff className="w-5 h-5 text-[#a89ab0] hover:text-[#d7aba8] transition-colors" />
+                ) : (
+                  <Eye className="w-5 h-5 text-[#a89ab0] hover:text-[#d7aba8] transition-colors" />
+                )}
               </button>
+            </div>
+            {/* Password Strength Checks */}
+            <div className="mt-3 flex flex-col gap-2 text-xs transition-colors duration-300">
+              {/* 1. Kam az kam 8 characters */}
+              <span
+                className={
+                  password.length >= 8 ? "text-[#9ed6a8]" : "text-[#927d77]"
+                }
+              >
+                {password.length >= 8 ? "✓" : "○"} At least 8 characters
+              </span>
+
+              {/* 2. Ek Capital letter (A-Z) */}
+              <span
+                className={
+                  /[A-Z]/.test(password) ? "text-green-600" : "text-[#927d77]"
+                }
+              >
+                {/[A-Z]/.test(password) ? "✓" : "○"} 1 Capital letter (A-Z)
+              </span>
+
+              {/* 3. Ek Small letter (a-z) */}
+              <span
+                className={
+                  /[a-z]/.test(password) ? "text-green-600" : "text-[#927d77]"
+                }
+              >
+                {/[a-z]/.test(password) ? "✓" : "○"} 1 Small letter (a-z)
+              </span>
+
+              {/* 4. Ek Special Character (@, #, $ etc.) */}
+              <span
+                className={
+                  /[!@#$%^&*(),.?":{}|<>]/.test(password)
+                    ? "text-green-600"
+                    : "text-[#927d77]"
+                }
+              >
+                {/[!@#$%^&*(),.?":{}|<>]/.test(password) ? "✓" : "○"} 1 Special
+                character (@, #, $)
+              </span>
             </div>
 
             {/* Terms */}
@@ -164,15 +208,11 @@ export default function SignupPage() {
               </span>
             </div>
             {error && (
-              <p className="text-[#ff8f8f] text-[13px] mb-[14px]">
-                {error}
-              </p>
+              <p className="text-[#ff8f8f] text-[13px] mb-[14px]">{error}</p>
             )}
 
             {message && (
-              <p className="text-[#9ed6a8] text-[13px] mb-[14px]">
-                {message}
-              </p>
+              <p className="text-[#9ed6a8] text-[13px] mb-[14px]">{message}</p>
             )}
             {/* Create Account Button */}
             <button

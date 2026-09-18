@@ -109,6 +109,11 @@
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import { Sparkles, Heart, Gem } from "lucide-react";
+export const metadata = {
+  title: "About Us | LUMÉRA Beauty",
+  description:
+    "Learn more about LUMÉRA, a beauty destination offering thoughtfully curated skincare, makeup, hair care, and self-care products.",
+};
 
 export default function About() {
   return (

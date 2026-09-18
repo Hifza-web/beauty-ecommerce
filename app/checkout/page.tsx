@@ -1,10 +1,9 @@
-
 "use client";
 
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import Link from "next/link";
-import { useState } from "react";
+import {useEffect, useState } from "react";
 import { Lock, Truck, CreditCard, ShoppingBag } from "lucide-react";
 import { useCart } from "@/components/CartContext";
 import { useAuth } from "@/components/AuthContext";
@@ -26,6 +25,39 @@ export default function CheckoutPage() {
   const [phone, setPhone] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [errorMsg, setErrorMsg] = useState("");
+    useEffect(() => {
+    const fetchProfile = async () => {
+      const token = localStorage.getItem("token");
+
+      if (!token) return;
+
+      try {
+        const response = await fetch("/api/auth/profile", {
+          method: "GET",
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        });
+
+        const data = await response.json();
+
+        if (!response.ok) return;
+
+        const user = data.user;
+
+        setFirstName(user.firstName || "");
+        setLastName(user.lastName || "");
+        setEmail(user.email || "");
+        setPhone(user.phone || "");
+        setAddress(user.shippingAddress?.address || "");
+        setCity(user.shippingAddress?.city || "");
+      } catch (error) {
+        console.error("Profile fetch error:", error);
+      }
+    };
+
+    fetchProfile();
+  }, []);
 
   const handlePlaceOrder = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -60,7 +92,24 @@ export default function CheckoutPage() {
         },
         paymentMethod: paymentMethod === "cod" ? "Cash on Delivery" : "Card",
       };
+      if (paymentMethod === "card") {
+        const stripeRes = await api.post("/stripe/create-checkout-session", {
+          userId,
+          items: cart,
+          shippingAddress: {
+            fullName: `${firstName} ${lastName}`.trim(),
+            address,
+            city,
+            postalCode,
+            phone,
+          },
+        });
 
+        if (stripeRes.data.url) {
+          window.location.href = stripeRes.data.url;
+          return;
+        }
+      }
       const res = await api.post("/orders/create", orderPayload);
 
       if (res.status === 201 || res.status === 200) {
@@ -149,7 +198,10 @@ export default function CheckoutPage() {
               {errorMsg}
             </div>
           )}
-          <form className="grid gap-12 lg:grid-cols-[1fr_380px]" onSubmit={handlePlaceOrder}>
+          <form
+            className="grid gap-12 lg:grid-cols-[1fr_380px]"
+            onSubmit={handlePlaceOrder}
+          >
             {/* LEFT */}
             <div className="space-y-10">
               {/* CONTACT */}
@@ -165,8 +217,7 @@ export default function CheckoutPage() {
                 </div>
 
                 <div className="mt-7">
-                  <label 
-                  className="text-xs uppercase tracking-[0.15em] text-[#806e68] font-bold">
+                  <label className="text-xs uppercase tracking-[0.15em] text-[#806e68] font-bold">
                     Email Address <span className="text-red-500">*</span>
                   </label>
 
@@ -293,9 +344,7 @@ export default function CheckoutPage() {
                     3
                   </div>
 
-                  <h2 className="font-[Marcellus] text-2xl">
-                    Delivery Method
-                  </h2>
+                  <h2 className="font-[Marcellus] text-2xl">Delivery Method</h2>
                 </div>
 
                 <div className="mt-7 rounded-xl border-2 border-[#b65f67] bg-[#fcf9f6] p-5">
@@ -303,9 +352,7 @@ export default function CheckoutPage() {
                     <Truck className="h-5 w-5 text-[#b65f67]" />
 
                     <div className="flex-1">
-                      <p className="text-sm font-medium">
-                        Standard Delivery
-                      </p>
+                      <p className="text-sm font-medium">Standard Delivery</p>
 
                       <p className="mt-1 text-xs text-[#927d77]">
                         Carefully packed and delivered to your address.
@@ -326,9 +373,7 @@ export default function CheckoutPage() {
                     4
                   </div>
 
-                  <h2 className="font-[Marcellus] text-2xl">
-                    Payment Method
-                  </h2>
+                  <h2 className="font-[Marcellus] text-2xl">Payment Method</h2>
                 </div>
 
                 <div className="mt-7 space-y-4">
@@ -345,9 +390,7 @@ export default function CheckoutPage() {
                     <CreditCard className="h-5 w-5 text-[#b65f67]" />
 
                     <div>
-                      <p className="text-sm font-medium">
-                        Credit / Debit Card
-                      </p>
+                      <p className="text-sm font-medium">Credit / Debit Card</p>
 
                       <p className="mt-1 text-xs text-[#927d77]">
                         Secure online payment
@@ -368,9 +411,7 @@ export default function CheckoutPage() {
                     <ShoppingBag className="h-5 w-5 text-[#b65f67]" />
 
                     <div>
-                      <p className="text-sm font-medium">
-                        Cash on Delivery
-                      </p>
+                      <p className="text-sm font-medium">Cash on Delivery</p>
 
                       <p className="mt-1 text-xs text-[#927d77]">
                         Pay when your order arrives
@@ -383,16 +424,11 @@ export default function CheckoutPage() {
 
             {/* RIGHT — ORDER SUMMARY */}
             <aside className="h-fit rounded-2xl border border-[#e7dcd7] bg-white p-7 shadow-[0_10px_35px_rgba(69,54,51,0.06)] lg:sticky lg:top-6">
-              <h2 className="font-[Marcellus] text-2xl">
-                Your Order
-              </h2>
+              <h2 className="font-[Marcellus] text-2xl">Your Order</h2>
 
               <div className="mt-7 space-y-5 border-b border-[#e7dcd7] pb-7">
                 {cart.map((item) => (
-                  <div
-                    key={item.id}
-                    className="flex gap-4"
-                  >
+                  <div key={item.id} className="flex gap-4">
                     <div className="relative h-20 w-16 shrink-0 overflow-hidden rounded-lg bg-[#f3e7e2]">
                       <img
                         src={item.image}
@@ -406,9 +442,7 @@ export default function CheckoutPage() {
                     </div>
 
                     <div className="min-w-0 flex-1">
-                      <p className="text-sm font-medium">
-                        {item.name}
-                      </p>
+                      <p className="text-sm font-medium">{item.name}</p>
 
                       <p className="mt-1 text-xs text-[#927d77]">
                         ${item.price.toFixed(2)} × {item.quantity}
@@ -424,23 +458,15 @@ export default function CheckoutPage() {
 
               <div className="mt-6 space-y-4">
                 <div className="flex justify-between text-sm">
-                  <span className="text-[#927d77]">
-                    Subtotal
-                  </span>
+                  <span className="text-[#927d77]">Subtotal</span>
 
-                  <span>
-                    ${cartTotal.toFixed(2)}
-                  </span>
+                  <span>${cartTotal.toFixed(2)}</span>
                 </div>
 
                 <div className="flex justify-between text-sm">
-                  <span className="text-[#927d77]">
-                    Shipping
-                  </span>
+                  <span className="text-[#927d77]">Shipping</span>
 
-                  <span className="text-[#65705b]">
-                    Free
-                  </span>
+                  <span className="text-[#65705b]">Free</span>
                 </div>
 
                 <div className="flex items-center justify-between border-t border-[#e7dcd7] pt-5">
@@ -460,7 +486,11 @@ export default function CheckoutPage() {
                 className="mt-8 flex w-full items-center justify-center gap-2 rounded-full bg-[#453633] py-4 text-sm uppercase tracking-[0.18em] text-white transition hover:bg-[#b65f67] disabled:opacity-70 disabled:cursor-not-allowed"
               >
                 <Lock className="h-4 w-4" />
-                {isSubmitting ? "Placing Order..." : paymentMethod === "card" ? "Pay with Stripe" : "Place Order"}
+                {isSubmitting
+                  ? "Placing Order..."
+                  : paymentMethod === "card"
+                    ? "Pay with Stripe"
+                    : "Place Order"}
               </button>
 
               <p className="mt-4 text-center text-xs leading-5 text-[#a08c86]">
@@ -482,4 +512,3 @@ export default function CheckoutPage() {
     </>
   );
 }
-

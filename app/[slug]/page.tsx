@@ -19,6 +19,7 @@ export type Product = {
   image: string;
   rating: number;
   category: string;
+   stock: number;
   badge?: "NEW" | "BESTSELLER" | "VEGAN";
   description: string;
   _id?: string;
@@ -58,6 +59,7 @@ export default function CategoryPage() {
           const mappedProducts = res.data.products.map((p: any) => ({
             ...p,
             id: p._id,
+            category: p.category?.name || "No Category"
           }));
           setFilteredProducts(mappedProducts);
         }
@@ -72,6 +74,10 @@ export default function CategoryPage() {
       name: product.name,
       price: product.price,
       image: product.image,
+      stock: product.stock,
+      category: product.category,
+      rating: product.rating,
+      description: product.description,
     });
     setToast(`${product.name} added to cart`);
     setTimeout(() => setToast(""), 2500);

@@ -20,10 +20,60 @@ router.post("/", async (req, res) => {
     });
   }
 });
-// Get All Products
+
+// Get All Products (with Search and Filters)
 router.get("/", async (req, res) => {
   try {
-    const products = await Product.find();
+    const { search, category, badge, inStock, sale } = req.query;
+    let query = {};
+
+    if (category && category !== "All") {
+      // Find the categories by name to get their ObjectIds
+      const Category = require("../models/Category");
+      const categoryNames = category.split(",");
+      const categoryDocs = await Category.find({ name: { $in: categoryNames } });
+      
+      if (categoryDocs && categoryDocs.length > 0) {
+        const categoryIds = categoryDocs.map(doc => doc._id);
+        query.category = { $in: categoryIds };
+      } else {
+        // If categories not found, return empty result
+        query.category = null;
+      }
+    }
+
+    if (badge) {
+      const badgeNames = badge.split(",").map(b => b.toUpperCase());
+      query.badge = { $in: badgeNames };
+    }
+
+    if (inStock === 'true') {
+      query.stock = { $gt: 0 };
+    }
+    if (sale === "true") {
+  query.$expr = {
+    $gt: ["$oldPrice", "$price"],
+  };
+}
+
+    if (search) {
+      // Find matching categories first
+      const Category = require("../models/Category");
+      const matchedCategories = await Category.find({ name: { $regex: search, $options: "i" } });
+      const categoryIds = matchedCategories.map(c => c._id);
+
+      query.$or = [
+        { name: { $regex: search, $options: "i" } },
+        { description: { $regex: search, $options: "i" } }
+      ];
+
+      // If search matched any category names, include those products too
+      if (categoryIds.length > 0) {
+        query.$or.push({ category: { $in: categoryIds } });
+      }
+    }
+
+    const products = await Product.find(query).populate("category");
 
     res.status(200).json({
       products,
@@ -73,10 +123,16 @@ router.get("/filter", async (req, res) => {
 
     // Category filter
     if (category) {
-      filter.category = {
-        $regex: `^${category}$`,
-        $options: "i",
-      };
+      const Category = require("../models/Category");
+      const categoryDoc = await Category.findOne({ 
+        name: { $regex: `^${category}$`, $options: "i" } 
+      });
+      
+      if (categoryDoc) {
+        filter.category = categoryDoc._id;
+      } else {
+        filter.category = null;
+      }
     }
 
     // Price filter
@@ -92,7 +148,7 @@ router.get("/filter", async (req, res) => {
       }
     }
 
-    const products = await Product.find(filter);
+    const products = await Product.find(filter).populate("category");
 
     res.status(200).json({
       products,
@@ -127,7 +183,7 @@ router.post("/upload-image", upload.single("image"), (req, res) => {
 // Get Single Product
 router.get("/:id", async (req, res) => {
   try {
-    const product = await Product.findById(req.params.id);
+    const product = await Product.findById(req.params.id).populate("category");
 
     if (!product) {
       return res.status(404).json({
