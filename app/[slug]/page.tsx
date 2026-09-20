@@ -195,7 +195,7 @@ export default function CategoryPage() {
             className="absolute inset-0 bg-black/40 backdrop-blur-sm"
             onClick={() => setQuickView(null)}
           />
-          <div className="relative w-full max-w-4xl overflow-hidden rounded-2xl bg-white shadow-2xl">
+          <div className="relative flex flex-col w-full max-w-4xl max-h-[90vh] overflow-hidden rounded-2xl bg-white shadow-2xl">
             <button
               onClick={() => setQuickView(null)}
               className="absolute right-4 top-4 z-10 flex h-10 w-10 items-center justify-center rounded-full bg-white/80 text-[#453633] shadow-sm backdrop-blur-sm transition hover:bg-white hover:scale-105"
@@ -203,8 +203,8 @@ export default function CategoryPage() {
               <X className="h-5 w-5" />
             </button>
 
-            <div className="flex flex-col md:flex-row">
-              <div className="relative h-[300px] w-full bg-[#f3e7e2] md:h-[600px] md:w-1/2">
+            <div className="flex flex-col md:flex-row overflow-y-auto">
+              <div className="relative shrink-0 h-[40vh] w-full bg-[#f3e7e2] md:h-[600px] md:w-1/2">
                 <img
                   src={quickView.image}
                   alt={quickView.name}
