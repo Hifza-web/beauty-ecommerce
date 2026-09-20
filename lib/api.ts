@@ -1,7 +1,7 @@
 import axios from "axios";
 
 const api = axios.create({
-  baseURL: process.env.NEXT_PUBLIC_API_URL || "/api",
+  baseURL: process.env.NEXT_PUBLIC_API_URL || "https://beauty-ecommerce-mh7p.vercel.app/api",
 });
 
 // Add a request interceptor to attach the JWT token to every request if it exists
