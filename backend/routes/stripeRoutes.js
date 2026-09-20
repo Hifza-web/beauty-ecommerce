@@ -70,6 +70,8 @@ router.post("/create-checkout-session", async (req, res) => {
       totalAmount += product.price * item.quantity;
     }
 
+    const frontendUrl = req.headers.origin || "http://localhost:3000";
+
     const session = await stripe.checkout.sessions.create({
       payment_method_types: ["card"],
 
@@ -85,10 +87,10 @@ router.post("/create-checkout-session", async (req, res) => {
       },
 
       success_url:
-        "http://localhost:3000/checkout/success?session_id={CHECKOUT_SESSION_ID}",
+        `${frontendUrl}/checkout/success?session_id={CHECKOUT_SESSION_ID}`,
 
-     cancel_url:
-  "http://localhost:3000/checkout/failed",
+      cancel_url:
+        `${frontendUrl}/checkout/failed`,
     });
 
     res.status(200).json({
