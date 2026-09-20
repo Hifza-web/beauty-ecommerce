@@ -320,7 +320,7 @@ return (
       </button>
 
       {/* HOVER ACTIONS — SAME AS BEFORE */}
-      <div className="absolute bottom-0 left-0 right-0 translate-y-full space-y-2 p-5 transition-transform duration-500 ease-out group-hover:translate-y-0">
+      <div className="absolute bottom-0 left-0 right-0 translate-y-0 lg:translate-y-full space-y-2 p-5 transition-transform duration-500 ease-out group-hover:translate-y-0">
         <button
           type="button"
           onClick={() => onAddToCart(product)}
