@@ -251,23 +251,29 @@ module.exports = (io) => {
       }
 
       // Real-time website notification
-      io.to(`user_${order.user}`).emit("orderStatusUpdated", {
-        orderId: order._id,
-        status: order.orderStatus,
-        message: `Your order status has been updated to ${order.orderStatus}.`,
-      });
+      if (typeof io !== 'undefined' && io) {
+        io.to(`user_${order.user}`).emit("orderStatusUpdated", {
+          orderId: order._id,
+          status: order.orderStatus,
+          message: `Your order status has been updated to ${order.orderStatus}.`,
+        });
+      }
 
       // Firebase push notification
       const user = await User.findById(order.user);
 
       if (user && user.fcmToken) {
-        await getMessaging().send({
-          token: user.fcmToken,
-          notification: {
-            title: "LUMÉRA Beauty - Order Update",
-            body: `Your order status is now ${order.orderStatus}.`,
-          },
-        });
+        try {
+          await getMessaging().send({
+            token: user.fcmToken,
+            notification: {
+              title: "LUMÉRA Beauty - Order Update",
+              body: `Your order status is now ${order.orderStatus}.`,
+            },
+          });
+        } catch (firebaseErr) {
+          console.warn("Firebase notification failed (non-critical):", firebaseErr.message);
+        }
       }
 
       res.status(200).json({
