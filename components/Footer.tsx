@@ -20,7 +20,7 @@ export default function Footer() {
 
     try {
       const response = await fetch(
-        "http://localhost:5000/api/newsletter/subscribe",
+        `${process.env.NEXT_PUBLIC_API_URL || "https://beauty-ecommerce-mh7p.vercel.app/api"}/newsletter/subscribe`,
         {
           method: "POST",
           headers: {
