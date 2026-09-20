@@ -46,6 +46,19 @@ if (process.env.NODE_ENV !== "production") {
 
 app.use(cors());
 app.use(express.json());
+
+// Vercel Serverless MongoDB Connection Middleware
+app.use(async (req, res, next) => {
+  if (process.env.MONGO_URI && mongoose.connection.readyState !== 1 && mongoose.connection.readyState !== 2) {
+    try {
+      await mongoose.connect(process.env.MONGO_URI);
+      console.log("MongoDB connected successfully!");
+    } catch (error) {
+      console.error("MongoDB connection failed:", error.message);
+    }
+  }
+  next();
+});
 app.use("/uploads", express.static("uploads"));
 app.use("/api/auth", authRoutes);
 app.use("/api/contact", contactRoutes);
@@ -58,14 +71,7 @@ app.use("/api/stripe", stripeRoutes);
 app.use("/api/admin", adminRoutes);
 app.use("/api/newsletter", newsletterRoutes);
 app.use("/api/notifications", notificationRoutes);
-if (process.env.MONGO_URI) {
-  mongoose
-    .connect(process.env.MONGO_URI)
-    .then(() => console.log("MongoDB connected successfully!"))
-    .catch((error) => console.error("MongoDB connection failed:", error.message));
-} else {
-  console.error("CRITICAL ERROR: MONGO_URI is not set in environment variables!");
-}
+
 
 app.get("/", (req, res) => {
   res.send("LUMÉRA Backend is running!");
