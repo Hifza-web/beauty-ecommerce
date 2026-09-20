@@ -114,11 +114,18 @@ export default function CheckoutPage() {
       const res = await api.post("/orders/create", orderPayload);
 
       if (res.status === 201 || res.status === 200) {
-        clearCart(); // Empties frontend & backend cart
+        try {
+          clearCart(); // Empties frontend & backend cart
+        } catch (cartErr) {
+          console.warn("Cart clear failed (non-critical):", cartErr);
+        }
         router.push("/checkout/success");
+      } else {
+        setErrorMsg("Failed to place order. Please try again.");
       }
     } catch (err: any) {
       console.error("Order creation failed:", err);
+      // If the error is from clearCart or redirect, order might still be created
       setErrorMsg(err.response?.data?.message || "Failed to place order.");
     } finally {
       setIsSubmitting(false);

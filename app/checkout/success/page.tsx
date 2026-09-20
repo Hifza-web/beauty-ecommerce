@@ -32,7 +32,11 @@ function OrderSuccessContent() {
         });
 
         if (res.status === 200 || res.status === 201) {
-          clearCart();
+          try {
+            clearCart();
+          } catch (cartErr) {
+            console.warn("Cart clear failed (non-critical):", cartErr);
+          }
         }
       } catch (err: any) {
         console.error("Payment verification failed:", err);
