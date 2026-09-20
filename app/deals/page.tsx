@@ -603,7 +603,7 @@ useEffect(() => {
             onClick={() => setQuickView(null)}
           >
             <div
-              className="relative grid max-h-[92vh] w-full max-w-5xl overflow-hidden rounded-3xl bg-[#fcf9f6] shadow-2xl md:grid-cols-2"
+              className="relative flex flex-col md:grid max-h-[92vh] w-full max-w-5xl overflow-hidden rounded-3xl bg-[#fcf9f6] shadow-2xl md:grid-cols-2"
               onClick={(e) => e.stopPropagation()}
             >
               <button
@@ -614,7 +614,7 @@ useEffect(() => {
                 ×
               </button>
 
-              <div className="min-h-[360px] bg-[#f3e7e2] md:min-h-[600px]">
+              <div className="relative shrink-0 h-[40vh] md:h-auto md:min-h-[600px] bg-[#f3e7e2]">
                 <img
                   src={quickView.image}
                   alt={quickView.name}
@@ -622,7 +622,7 @@ useEffect(() => {
                 />
               </div>
 
-              <div className="flex flex-col justify-center overflow-y-auto p-8 md:p-12">
+              <div className="flex flex-1 flex-col justify-start md:justify-center overflow-y-auto p-8 md:p-12">
 
                 <p className="text-[10px] uppercase tracking-[0.3em] text-[#b65f67]">
                   {quickView.category}
