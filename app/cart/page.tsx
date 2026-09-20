@@ -98,10 +98,10 @@ export default function CartPage() {
                   return (
                     <div
                       key={item.id}
-                      className="group relative flex flex-col gap-5 rounded-2xl border border-[#e7dcd7] bg-white p-5 shadow-[0_8px_30px_rgba(69,54,51,0.06)] transition-all duration-300 hover:-translate-y-1 hover:shadow-[0_16px_40px_rgba(69,54,51,0.12)] sm:flex-row sm:items-start"
+                      className="group relative flex flex-row items-start gap-4 rounded-2xl border border-[#e7dcd7] bg-white p-4 shadow-[0_8px_30px_rgba(69,54,51,0.06)] transition-all duration-300 hover:-translate-y-1 hover:shadow-[0_16px_40px_rgba(69,54,51,0.12)] sm:gap-5 sm:p-5"
                     >
                       {/* PRODUCT IMAGE */}
-                      <div className="h-36 w-full shrink-0 overflow-hidden rounded-xl bg-[#f3e7e2] sm:w-28">
+                      <div className="h-28 w-24 sm:h-36 sm:w-28 shrink-0 overflow-hidden rounded-xl bg-[#f3e7e2]">
                         <img
                           src={item.image}
                           alt={item.name}
