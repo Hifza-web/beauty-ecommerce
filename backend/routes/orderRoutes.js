@@ -74,22 +74,29 @@ module.exports = (io) => {
           $inc: { stock: -item.quantity },
         });
       }
-      io.emit("newOrder", {
-        message: "New order received!",
-        orderId: order._id,
-        totalAmount: order.totalAmount,
-      });
+      // Only emit socket event if io is available (not on Vercel serverless)
+      if (io) {
+        io.emit("newOrder", {
+          message: "New order received!",
+          orderId: order._id,
+          totalAmount: order.totalAmount,
+        });
+      }
 
       const user = await User.findById(userId);
       // Firebase push notification for new order
       if (user && user.fcmToken) {
-        await getMessaging().send({
-          token: user.fcmToken,
-          notification: {
-            title: "LUMÉRA Beauty - Order Placed",
-            body: "Your order has been placed successfully.",
-          },
-        });
+        try {
+          await getMessaging().send({
+            token: user.fcmToken,
+            notification: {
+              title: "LUMÉRA Beauty - Order Placed",
+              body: "Your order has been placed successfully.",
+            },
+          });
+        } catch (firebaseErr) {
+          console.warn("Firebase notification failed (non-critical):", firebaseErr.message);
+        }
       }
 
       if (user && user.email) {
