@@ -33,7 +33,7 @@ useEffect(() => {
 }, [currentIndex, images.length]);
   return (
 
-<section className="sticky top-0 h-[750px]">
+<section className="relative h-[80vh] min-h-[500px] lg:h-[750px]">
   <div className="h-full w-full overflow-hidden bg-[#eadcdf]">
 
     {/* Hero Image Slider (Infinite Loop) */}
@@ -60,7 +60,7 @@ useEffect(() => {
 
     {/* Hero Content */}
     <div className="relative z-10 mx-auto grid h-full max-w-7xl grid-cols-1 md:grid-cols-2 items-center px-6 lg:px-8">
-      <div className="text-white w-full max-w-[280px] sm:max-w-sm md:max-w-lg lg:max-w-xl">
+      <div className="text-white w-full sm:max-w-sm md:max-w-lg lg:max-w-xl">
 
         <p className="mb-5 text-sm font-medium uppercase tracking-[0.3em]">
           New Collection

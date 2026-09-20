@@ -43,8 +43,7 @@ export default function Navbar() {
   return (
     <header className="border-t border-[#d9d8b8] bg-[#faf2f4]">
       <nav className="mx-auto max-w-7xl px-6 py-4">
-        {/* 3-column grid: logo LEFT | nav+search CENTER | icons RIGHT */}
-        <div className="grid grid-cols-[auto_1fr_auto] items-center gap-20">
+        <div className="grid grid-cols-[auto_1fr_auto] items-center gap-4 lg:gap-20">
           {/* Col 1 — Logo, left edge */}
           <Link
             href="/"
