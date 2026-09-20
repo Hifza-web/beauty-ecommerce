@@ -179,7 +179,7 @@ export default function OrderDetailsPage() {
                     </p>
                   </div>
                   <a
-                    href={`http://localhost:5000/api/orders/${order._id}/invoice`}
+                    href={`${process.env.NEXT_PUBLIC_API_URL || "https://beauty-ecommerce-mh7p.vercel.app/api"}/orders/${order._id}/invoice`}
                     target="_blank"
                     rel="noopener noreferrer"
                     className="inline-flex items-center justify-center gap-2 rounded-full bg-[#453633] px-5 py-3 text-xs uppercase tracking-[0.12em] text-white transition hover:bg-[#b65f67]"
