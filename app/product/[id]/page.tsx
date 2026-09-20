@@ -146,7 +146,7 @@ export default function ProductDetailsPage() {
                   key={index}
                   type="button"
                   onClick={() => setSelectedImage(image)}
-                  className={`h-20 w-20 overflow-hidden rounded-xl bg-[#f3e7e2] transition ${
+                  className={`h-16 w-16 sm:h-20 sm:w-20 shrink-0 overflow-hidden rounded-xl bg-[#f3e7e2] transition ${
                     selectedImage === image
                       ? "ring-2 ring-[#b65f67] ring-offset-2"
                       : "opacity-70 hover:opacity-100"
