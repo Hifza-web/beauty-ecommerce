@@ -8,5 +8,10 @@
       "source": "/(.*)",
       "destination": "/$1"
     }
-  ]
+  ],
+  "functions": {
+    "api/**/*.js": {
+      "includeFiles": "backend/node_modules/pdfkit/js/**"
+    }
+  }
 }
