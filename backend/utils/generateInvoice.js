@@ -1,5 +1,13 @@
 const PDFDocument = require("pdfkit");
 
+// Hack to ensure Vercel includes PDFKit fonts in the serverless function bundle
+try {
+  require("pdfkit/js/standard-fonts/Helvetica.cjs");
+  require("pdfkit/js/standard-fonts/Helvetica-Bold.cjs");
+  require("pdfkit/js/standard-fonts/Helvetica.afm");
+  require("pdfkit/js/standard-fonts/Helvetica-Bold.afm");
+} catch (e) {}
+
 const generateInvoice = (order, res) => {
   const doc = new PDFDocument({
     margin: 50,
